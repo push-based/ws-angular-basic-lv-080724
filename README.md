@@ -12,7 +12,7 @@
 ```bash
 git clone https://github.com/push-based/ws-angular-basic-lv-080724.git
 
-cd ws-ng-basic
+cd ws-angular-basic-lv-080724
 npm install
 
 # (optional) if the step before didn't work, please try the following
