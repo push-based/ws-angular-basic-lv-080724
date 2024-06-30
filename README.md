@@ -27,8 +27,8 @@ npm run start
 
 ## Workshop Information
 
-* [ws info doc]()
-* [slides]()
+* [ws info doc](https://docs.google.com/document/d/1BZzSD3VUfe1JuOi8pLu_pI1XVO56KMK29TX5Lpks_Kk/edit?usp=drive_link)
+* [slides](https://drive.google.com/drive/folders/1IpVqZmugIr37yYj0oWJSgYTqulUbDJpF?usp=drive_link)
 
 ## Exercises
 
