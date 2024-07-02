@@ -239,14 +239,14 @@ Otherwise, add it to the `movie-card.component.scss` file.
 /* src/app/movie/movie-card/movie-card.component.ts */
 
 .movie-card {
-  transition:
-    box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s,
-    transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+  transition: box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s;
   transform-origin: bottom;
 }
 
 .movie-card:hover {
-  transform: scale(1.03);
+  .movie-image {
+    transform: scale(1);
+  }
   box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.6);
 }
 
@@ -254,6 +254,8 @@ Otherwise, add it to the `movie-card.component.scss` file.
   display: block;
   width: 100%;
   height: auto;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+  transform: scale(0.97);
 }
 
 .movie-card-content {
@@ -346,12 +348,13 @@ import { StarRatingComponent } from '../../ui/pattern/star-rating/star-rating.co
     .movie-card {
       transition:
         box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s,
-        transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s;
-      transform-origin: bottom;
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) 0s;
     }
 
     .movie-card:hover {
-      transform: scale(1.03);
+      .movie-image {
+        transform: scale(1);
+      }
       box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.6);
     }
 
@@ -359,6 +362,8 @@ import { StarRatingComponent } from '../../ui/pattern/star-rating/star-rating.co
       display: block;
       width: 100%;
       height: auto;
+      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+      transform: scale(0.97);
     }
 
     .movie-card-content {

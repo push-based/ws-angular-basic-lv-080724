@@ -115,7 +115,7 @@ this.favoriteMovieIds.update(favoriteMovieIds => {
 ```
 
 > [!TIP]
-> Signals are `immbutable` by default. If you don't set it an actually "new" value, it won't notify
+> Signals are `immutable` by default. If you don't set it an actually "new" value, it won't notify
 > consumers about updates.
 > This is why you either return an entirely new data structure on updates, or set a custom `equal` function.
 > Instead of returning always a new data-structure you could also use the following example:
