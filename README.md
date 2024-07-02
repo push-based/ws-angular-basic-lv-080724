@@ -44,28 +44,26 @@ npm run start
 8. [Reusable components: movie-list](./exercises/components%20&%20template/movie-list-component.md)
 9. [Reusable components: movie-card](./exercises/components%20&%20template/movie-card-component.md)
 10. [Attribute Directives: Create TiltDirective](exercises/components & template/attribute_directives.md)
-11. [Attribute Directives: HostBindings & HostLisenters](exercises/components & template/attribute_directive_hostbinding_hostlistener.md)
+11. [Attribute Directives: HostBindings & HostListeners](exercises/components & template/attribute_directive_hostbinding_hostlistener.md)
 12. [Pipes: MovieImagePipe](exercises/components & template/pipes.md)
-13. [❌: Async Data - Http: fetch & display real data](./exercises)
-14. [Async Data: AsyncPipe](./exercises/async-pipe.md)  
-15. [Async Data: HttpClient](./exercises/http-client.md)
-16. [Async Data: Http Interceptors](./exercises/http-interceptors.md)  
+13. [Async Data: HttpClient](exercises/async data - http/http-client.md)
+14. [Async Data: Http Interceptors](exercises/async data - http/http-interceptors.md)
 
 
 ### Day 2
 
-1. [Routing: Router Setup](./exercises/routing_setup.md)
+1. [Routing: Router Setup](exercises/routing/routing_setup.md)
 2. [❌: Routing: 404 page](./exercises/)
-3. [Routing: Navigation & Params](./exercises/routing_navigation_and_params.md)
+3. [Routing: Navigation & Params](exercises/routing/routing_navigation_and_params.md)
 4. [❌: Routing: Movie Search](./exercises)
 5. [❌: Routing: Guards](./exercises)
-6. [❌: Routing: Lazy Loading](./exercises/routing_lazyloading.md)
+6. [❌: Routing: Lazy Loading](exercises/routing/routing_lazyloading.md)
 7. [Dependency Injection: MovieService](./exercises/services.md)
 8. [❌: Dependency Injection: InjectionToken](./exercises/)
-9. [Wrap up: MovieDetailPage](./exercises/wrap-up_detail-page.md)
-10. [❌: Change Detection: DirtyCheck](./exercises/)
-11. [Change Detection: OnPush](./exercises/change-detection%20-%20OnPush.md)
-12. [Change Detection: Signals](./exercises/change-detection%20-%20signals.md)
+9. [Content Projection & View Children]()
+10. [Wrap up: MovieDetailPage](./exercises/wrap-up_detail-page.md)
+11. [❌: Change Detection: DirtyCheck](./exercises/)
+12. [Change Detection: OnPush](./exercises/change-detection%20-%20OnPush.md)
 
 
 ### Day 3
