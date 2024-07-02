@@ -3,11 +3,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   Input,
-  TrackByFunction,
   ViewEncapsulation,
 } from '@angular/core';
-
-import { trackByIndex } from '../../../shared/utils/track-by';
 
 const range = 10;
 const numStars = 5;
@@ -21,11 +18,11 @@ const starsArray: number[] = new Array(numStars).fill(1);
     </span>
     <div class="stars">
       <span
-        *ngFor="let fill of stars; trackBy: trackByIndex"
+        *ngFor="let fill of stars"
         class="star"
         [ngClass]="{
           'star-half': fill === 0,
-          'star-empty': fill === -1
+          'star-empty': fill === -1,
         }"
         >★</span
       >
@@ -47,7 +44,6 @@ export class StarRatingComponent {
   stars: number[] = starsArray;
   @Input() showRating = false;
   tooltipText = `0 average rating`;
-  trackByIndex: TrackByFunction<number> = trackByIndex();
 
   private _rating = 5;
   @Input()

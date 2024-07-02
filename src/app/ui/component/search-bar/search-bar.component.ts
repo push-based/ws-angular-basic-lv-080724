@@ -7,7 +7,7 @@ import {
   Input,
   OnInit,
   Output,
-  ViewChild,
+  viewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -76,9 +76,8 @@ type UiActions = {
   imports: [FastSvgComponent, RxLet],
 })
 export class SearchBarComponent implements OnInit, ControlValueAccessor {
-  @ViewChild('searchInput') inputRef!: ElementRef<HTMLInputElement>;
-  @ViewChild('form') formRef!: ElementRef<HTMLFormElement>;
-
+  inputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+  formRef = viewChild<ElementRef<HTMLFormElement>>('form');
   ui = this.actions.create({
     /*searchChange: String,*/
     formSubmit: (e: Event): Event => {
@@ -110,7 +109,7 @@ export class SearchBarComponent implements OnInit, ControlValueAccessor {
     return fromEvent(this.document, 'click').pipe(
       // forward if the form did NOT triggered the click
       // means we clicked somewhere else in the page but the form
-      filter(e => !this.formRef.nativeElement.contains(e.target as any))
+      filter(e => !this.formRef().nativeElement.contains(e.target as any))
     );
   }
 
@@ -168,7 +167,7 @@ export class SearchBarComponent implements OnInit, ControlValueAccessor {
   }
 
   private readonly focusInput = () => {
-    return this.inputRef.nativeElement.focus();
+    return this.inputRef().nativeElement.focus();
   };
 
   private readonly setOpenedStyling = (opened: boolean) => {

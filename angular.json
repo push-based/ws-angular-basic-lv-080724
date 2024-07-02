@@ -7,13 +7,16 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
+          "prefix": "",
           "style": "scss",
-          "spec": false
+          "standalone": true,
+          "inlineTemplate": true,
+          "inlineStyle": true
         }
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "movie",
+      "prefix": "",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",

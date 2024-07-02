@@ -80,3 +80,37 @@ body.dark img:not([src*='.svg']) {
     }
   }
 }
+
+.favorite-widget {
+  display: flex;
+  gap: .5rem;
+  font-size: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.favorite-indicator {
+  border: unset;
+  background: transparent;
+  cursor: pointer;
+
+  color: var(--palette-text-disabled);
+
+  &::before {
+    content: "❤️";
+    color: rgba(255, 0, 0, .3);
+  }
+
+  &:hover {
+    color: var(--palette-text-primary);
+    &::before {
+      color: rgba(255, 0, 0, .5);
+    }
+  }
+
+  &.is-favorite {
+    color: var(--palette-text-primary);
+    &::before {
+      color: red;
+    }
+  }
+}

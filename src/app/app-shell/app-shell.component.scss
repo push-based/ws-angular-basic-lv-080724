@@ -146,6 +146,7 @@ ui-side-drawer {
 .content {
   min-height: calc(100vh - 72px);
   width: 100%;
+  padding-bottom: 2rem;
 }
 
 :host {
