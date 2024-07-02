@@ -82,7 +82,7 @@ Transform it into a `Signal<Set<string>>`.
 You also have to adjust the `toggleFavorite` method in order to work with the new data structure.
 
 
-> ![WARNING]
+> [!WARNING]
 > We cannot simply mutate a signals value
 > The following snippet **🚧 won't work 🚧**: Angular will never know that the signal got updated.
 
@@ -114,7 +114,7 @@ this.favoriteMovieIds.update(favoriteMovieIds => {
 });
 ```
 
-> ![TIP]
+> [!TIP]
 > Signals are `immbutable` by default. If you don't set it an actually "new" value, it won't notify
 > consumers about updates.
 > This is why you either return an entirely new data structure on updates, or set a custom `equal` function.

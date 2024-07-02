@@ -44,7 +44,7 @@ movies = [
 
 Now let's use the `@for` control flow to repeat the movie card template and show multiple of them.
 
-> ![NOTE]
+> [!NOTE]
 > Please don't forget to use a `track`
 > You should specify to use the `id` property for tracking down a movie
 
@@ -174,7 +174,7 @@ what is available in the favoriteMovieIds set.
 <details>
   <summary>favoriteMovies()</summary>
 
-> ![NOTE]
+> [!NOTE]
 > You can implement this in multiple ways, as a class function, an anonymous function
 > or a `getter`. You can choose whatever way you like.
 

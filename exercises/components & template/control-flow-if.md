@@ -88,7 +88,7 @@ Use an `@else` branch to display `Like me` instead of `I like it`.
 
 Great job! Check out the application if you now can see the @else branch being displayed properly.
 
-## 3. Use [class] binding to set a `is-favorite` class
+## 4. Use [class] binding to set a `is-favorite` class
 
 Our final polishing for the favorite toggle will be setting the `is-favorite` class on it whenever
 `isFavorite` is true.
