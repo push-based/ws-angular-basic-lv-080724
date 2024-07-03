@@ -6,50 +6,100 @@ We want to enable our users to see detail information about a movie after select
 We will recap the following things we've learned so far:
 * lazy loaded routing
 * router params
-* structural directives
+* control flow
 * http client / service usage
 * multiple http calls
 * loading state
 
-## Generate MovieDetailPageComponent
+## 0. Prepare the MovieService
 
-Generate a `MovieDetailPageComponent` either as `RoutedModule` or `standalone`.
+We will need to call multiple different APIs during this exercise. Let's first make sure they are accessible via the `MovieService`
+before we start implementing the detail page.
+
+Implement the following methods in the `MovieService` for usage in the upcoming detail page component.
+
+* method to fetch movie by `getMovieById(id: string): Observable<TMDBMovieDetailsModel>`
+* method to fetch recommendations `getMovieRecommendations(movieId: string): Observable<{ results: TMDBMovieModel[] }>`
+* method to fetch credits `getMovieCredits(movieId: string): Observable<TMDBMovieCreditsModel>`
+
+Information for the byId request:
+* [`/movie/${movieId}`](https://developers.themoviedb.org/3/movies/get-movie-details)
+* returns `TMDBMovieDetailsModel` (`shared/model/movie-details.model.ts`)
+
+Information for the recommendations request:
+* [`/movie/${movieId}/recommendations`](https://developers.themoviedb.org/3/movies/get-movie-recommendations)
+* returns `{ results: MovieModel[] }`
+
+Information for the credits request:
+* [`/movie/${movieId}/credits`](https://developers.themoviedb.org/3/movies/get-movie-credits)
+* returns `{ results: TMDBMovieCreditsModel }` (`shared/model/movie-credits.model.ts`)
+
+<details>
+  <summary>MovieService method implementations</summary>
+
+```ts
+
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+import { environment } from '../../environments/environment';
+import { TMDBMovieModel } from '../shared/model/movie.model';
+import { TMDBMovieCreditsModel } from '../shared/model/movie-credits.model';
+import { TMDBMovieDetailsModel } from '../shared/model/movie-details.model';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MovieService {
+  private httpClient = inject(HttpClient);
+
+  getMovieCredits(movieId: string): Observable<TMDBMovieCreditsModel> {
+    return this.httpClient.get<TMDBMovieCreditsModel>(
+      `${environment.tmdbBaseUrl}/3/movie/${movieId}/credits`
+    );
+  }
+
+  getMovieRecommendations(
+    movieId: string
+  ): Observable<{ results: TMDBMovieModel[] }> {
+    return this.httpClient.get<{ results: TMDBMovieModel[] }>(
+      `${environment.tmdbBaseUrl}/3/movie/${movieId}/recommendations`
+    );
+  }
+
+  getMovieById(movieId: string): Observable<TMDBMovieDetailsModel> {
+    return this.httpClient.get<TMDBMovieDetailsModel>(
+      `${environment.tmdbBaseUrl}/3/movie/${movieId}`
+    );
+  }
+
+  getMovies(category: string): Observable<{ results: TMDBMovieModel[] }> {
+    return this.httpClient.get<{ results: TMDBMovieModel[] }>(
+      `${environment.tmdbBaseUrl}/3/movie/${category}`
+    );
+  }
+}
+
+
+```
+
+</details>
+
+## 1. Generate MovieDetailPageComponent
+
+Generate a component `MovieDetailPageComponent`.
 
 <details>
     <summary> Generate MovieDetailPageComponent </summary>
 
 ```bash
-ng g c movie/movie-detail-page --standalone
-```
-
-</details>
-
-In case you go for the `RoutedModule`:
-
-<details>
-  <summary>RoutedModule</summary>
-
-```bash
-ng g m movie/movie-detail-page
-
 ng g c movie/movie-detail-page
 ```
 
-```ts
-// movie-detail-page.module.ts
-
-const routes: Routes = [{
-    path: '',
-    component: MovieDetailPageComponent
-}];
-
-RouterModule.forChild(routes)
-
-```
-
 </details>
 
-Now we can configure our lazy-loaded route in the `AppRoutingModule`.
+Now we can configure our lazy-loaded route in the `app.routing.ts` file.
 The route should load the `MovieDetailPageComponent` at the `/movie` route and have a parameter for the `:id`. 
 
 If you don't stick to the solution, you can assign any custom route you want, it doesn't matter. Just be sure to add
@@ -59,19 +109,19 @@ a parameter for the id :)
     <summary> Router Config </summary>
 
 ```ts
-// app-routing.module.ts
+// app.routing.ts
 
 {
     path: 'movie/:id',
     loadComponent: () => import('./movie/movie-detail-page/movie-detail-page.component')
-    .then(m => m.MovieDetailPageComponent)
+      .then(m => m.MovieDetailPageComponent)
 },
 
 ```
 
 </details>
 
-## Implement navigation
+## 1. Implement navigation
 
 We also need a way to navigate to the `MovieDetailPageComponent`.
 

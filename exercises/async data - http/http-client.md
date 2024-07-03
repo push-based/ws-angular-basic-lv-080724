@@ -168,59 +168,84 @@ this.http
 </details>
 
 
+Well done! You have successfully fired a `GET` request with the `HttpClient`! We are 1 step closer to a fully featured app!
+
+Serve the application and see the result! You should now see a beautiful list of actual movies :).
+
+## 4. Show a loading state
+
+Now that we are loading asynchronous data, we can also run into situations where we have to wait for it to appear. In order to not
+only show a blank page to the user.
+
+Let's first create a `computed` for our loading state. The loading computed should return `true` when there are no movies
+in the list and `false` when there are.
+
 <details>
-    <summary>Show Solution</summary>
+  <summary>loading computed</summary>
 
 ```ts
 // app.component.ts
 
-movies = signal<TMDBMovieModel[]>([]);
+import { computed } from '@angular/core';
 
-constructor(
-    private httpClient: HttpClient
-) {}
+loading = computed(() => {
+  return this.movies().length === 0;
+});
 
-ngOnInit() {
-    // destruct environment variables
-    const { tmdbBaseUrl, tmdbApiReadAccessKey } = environment;
-    this.httpClient.get<{ results: MovieModel[]}>(
-        `${tmdbBaseUrl}/3/movie/popular`,
-        {
-            headers: {
-                Authorization: `Bearer ${tmdbApiReadAccessKey}`,
-            },
-        }
-    ).subscribe(response => {
-        this.movies.set(response.results);
-    });
-}
+
 ```
+
 </details>
 
-serve the application and see the result! You should now see a beautiful list of movies
+Great, now we are going to use it in combination with an `@if` to show a `div.loader` and `@else` to show the `movie-list`.
 
-## throttle and watch loading spinner
+<details>
+  <summary>Show loading spinner</summary>
+
+```html
+<!-- app.component.ts -->
+
+<!-- code before -->
+@if (loading()) {
+  <div class="loader"></div>
+} @else {
+  <movie-list
+    [movies]="movies()"
+    [favoriteMovieIds]="favoriteMovieIds()"
+    (toggleFavorite)="toggleFavorite($event)" />
+}
+<!-- code after -->
+```
+
+</details>
+
+## 5. Throttle your network and test the spinner 
 
 Let's now see if our loading spinner is actually doing what it should (display as long as there are no movies).
 
 You can choose between two options:
 * Throttle your connection with the dev tools
-* apply a [`delay`](https://rxjs.dev/api/operators/delay) operator to the stream in order to simulate waiting times
+* use a `setTimeout` before setting the signal
 
+> [!WARNING]
 > Throttling can be a bit cumbersome, as you have to refresh the page and downloading the bundles will be extremely slow as well.
 
-### Option: delay
+### Option: setTimeout
 
-In order to simulate waiting times from the API we can simply apply a `delay` operator to the value subscription.
+In order to simulate waiting times from the API we can simply apply a `setTimeout`.
 
 ```ts
-http.get()
-    .pipe( // pipe is needed to use operators
-        delay(250) // the delay operator will delay the emission of values for the configured amount of time in ms
-    )
+
+this.movieService.getMovies('popular').subscribe(data => {
+  setTimeout(() => {
+    this.movies.set(data.results);
+  }, 2500);
+});
 ```
 
 Refresh the page and see if the loading spinner appears for a while until the result is finally there.
+
+... Don't forget to remove that thing afterward!
 
 ### Option: Throttling
 
@@ -228,7 +253,3 @@ serve the application and go to the network tab of the chrome dev tools.
 Configure network throttling to something very slow (slow/fast 3g).
 
 Refresh the page and see if the loading spinner appears for a while until the result is finally there.
-
-
-Well done! You have successfully fired a `GET` request with the `HttpClient`! We are 1 step closer to a fully
-working app :)

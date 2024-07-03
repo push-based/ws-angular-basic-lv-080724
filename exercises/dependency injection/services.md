@@ -1,55 +1,61 @@
 # Exercise: Services & Dependency Injection
 
-In this exercise you will learn a new building block of the angular ecosystem, `Services`.
+In this exercise you will learn a new building block of the angular ecosystem, `Services`, or rather `@Injectable()`.
 Furthermore, you will get to know the basics of angulars dependency injection system.
 
-Your will introduce a service `MovieService` which will serve as our abstraction layer for accessing the `TMDBMovieApi`.
+You will introduce the service `MovieService` which will serve as our abstraction layer for accessing the `TMDBMovieApi`.
 
-## introduce MovieService
+## 1. Introduce MovieService
 
 create a new service `MovieService` in the `movie` folder. It should be providedIn `root`.
 
 <details>
-    <summary>show solution</summary>
+    <summary>Create `MovieService`</summary>
 
 `ng g s movie/movie`
 
 you should end up having the following `MovieService`
 
 ```ts
+// src/app/movie/movie.service.ts
+
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MovieService {
-
-  constructor() { }
+  
 }
 ```
 
 </details>
 
-Inject, the `HttpService`.
+As we want to fetch data in this service, inject the `HttpService`.
 
-Now start introducing methods for re-usage in our components:
-* method to fetch movies by `getMovies(category: string)` (return value is same as the current `movies$` in `MovieListPageComponent`)
-* method to fetch movie by `getMovieById(id: string)`
-* method to fetch recommendations `getMovieRecommendations(id: string)`
+<details>
+  <summary>Inject `HttpService`</summary>
 
-Information for the byId request:
-* [`/movie/${movieId}`](https://developers.themoviedb.org/3/movies/get-movie-details)
-* returns `TMDBMovieDetailsModel` (`shared/model/movie-details.model.ts`)
 
-Information for the recommendations request:
-* [`/movie/${movieId}/recommendations`](https://developers.themoviedb.org/3/movies/get-movie-recommendations)
-* returns `{ results: MovieModel[] }`
+```ts
+// src/app/movie/movie.service.ts
 
-Information for the credits request:
-* [`/movie/${movieId}/credits`](https://developers.themoviedb.org/3/movies/get-movie-credits)
-* returns `{ results: TMDBMovieCreditsModel }` (`shared/model/movie-credits.model.ts`)
-* we are only interested in the `cast: TMDBMovieCastModel` property for now though :)
-  
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MovieService {
+  private httpClient = inject(HttpClient);
+}
+
+```
+
+</details>
+
+Now start implementing the first method for re-usage in our components:
+* method to fetch movies by `getMovies(category: string): Observable<{ results: TMDBMovieModel[] }>`
 
 <details>
     <summary>MovieService implementation</summary>
@@ -57,85 +63,70 @@ Information for the credits request:
 ```ts
 // movie.service.ts
 
-getMovieCredits(id: string): Observable<TMDBMovieCreditsModel> {
-    return this.httpClient.get<TMDBMovieCreditsModel>(
-        `${tmdbBaseUrl}/3/movie/${id}/credits`
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+import { environment } from '../../environments/environment';
+import { TMDBMovieModel } from '../shared/model/movie.model';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MovieService {
+  private httpClient = inject(HttpClient);
+
+  getMovies(category: string): Observable<{ results: TMDBMovieModel[] }> {
+    return this.httpClient.get<{ results: TMDBMovieModel[] }>(
+      `${environment.tmdbBaseUrl}/3/movie/${category}`,
+      {
+        headers: {
+          Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
+        },
+      }
     );
+  }
 }
 
-getMovieRecommendations(id: string): Observable<{ results: MovieModel[] }> {
-    return this.httpClient.get<{ results: MovieModel[] }>(
-        `${tmdbBaseUrl}/3/movie/${id}/recommendations`,
-        {
-            headers: {
-                Authorization: `Bearer ${tmdbApiReadAccessKey}`,
-            },
-        }
-    );
-}
-
-getMovieById(id: string): Observable<TMDBMovieDetailsModel> {
-    return this.httpClient.get<TMDBMovieDetailsModel>(
-        `${tmdbBaseUrl}/3/movie/${id}`,
-        {
-            headers: {
-                Authorization: `Bearer ${tmdbApiReadAccessKey}`,
-            },
-        }
-    );
-}
-
-getMovies(category: string): Observable<{ results: MovieModel[] }> {
-    return this.httpClient.get<{ results: MovieModel[]}>(
-        `${tmdbBaseUrl}/3/movie/${category}`,
-        {
-            headers: {
-                Authorization: `Bearer ${tmdbApiReadAccessKey}`,
-            },
-        }
-    );
-}
 ```
 </details>
 
-
-Now we want to make use of our `MovieService` in the `MovieListPageComponent`.
+Now we want to make use of our `MovieService` in the `AppComponent`.
 
 <details>
     <summary>Use MovieService</summary>
 
-Go to the `MovieListPageComponent`, inject the `MovieService` and replace it with the `HttpClient`
+Go to the `AppComponent`, inject the `MovieService` and replace it with the `HttpClient`.
+
+Use one of the following categories as input:
+* `popular`
+* `top_rated`
+* `upcoming`
 
 ```ts
-// movie-list-page.component.ts
+// app.component.ts
 
-constructor(
-    private movieService: MovieService,
-    private activatedRoute: ActivatedRoute
-) {
+private movieService = inject(MovieService);
+
+constructor() {
+  this.movieService.getMovies('popular').subscribe(data => {
+    this.movies.set(data.results);
+  });
 }
-
-// onInit
-this.activatedRoute.params.subscribe((params) => {
-    this.movies$ = this.movieService.getMovies(params.category);
-});
 ```
 
 </details>
 
-serve the application, the movie list should still be visible
+Well done! Serve the application, the movie list should still be visible.
 
-## Bonus: Implement genre methods
+## 2. Extend MovieService with genres
 
-This will be useful for other exercises :)
-
-> If you have those methods already implemented in other components, please just move them over to the `MovieService`
-and replace the usage accordingly!
+Even thought we are not needing those methods right now, this will be useful for upcoming exercises :).
 
 Let's add more methods to the `MovieService` for later re-usage
 
 * method to fetch genres `getGenres()`
-* method to fetch movies by genreId `getMovieByGenre(id: string)`
+* method to fetch movies by genreId `getMoviesByGenre(genreId: string)`
 
 Information for the genres request:
 * [`/genre/movie/list`](https://developers.themoviedb.org/3/movies/get-movie-credits)
@@ -143,7 +134,7 @@ Information for the genres request:
 
 Information for the movies by genre request:
 * [`/discover/movie?with_genres`](https://developers.themoviedb.org/3/discover/movie-discover)
-* returns `{ results: MovieModel[] }`
+* returns `{ results: TMDBMovieModel[] }`
 * use `params: { with_genres: genre }` to send the queryparams
 
 <details>
@@ -152,27 +143,27 @@ Information for the movies by genre request:
 ```ts
 // movie.service.ts
 
-getGenres(): Observable<{ genres: TMDBGenreModel[] }> {
-  return this.httpClient.get<{ genres: TMDBGenreModel[] }>(
-    `${tmdbBaseUrl}/genre/movie/list`,
+getGenres(): Observable<{ genres: TMDBMovieGenreModel[] }> {
+  return this.httpClient.get<{ genres: TMDBMovieGenreModel[] }>(
+    `${environment.tmdbBaseUrl}/genre/movie/list`,
     {
       headers: {
-        Authorization: `Bearer ${tmdbApiReadAccessKey}`,
+        Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
       },
     }
   );
 }
 
-getMoviesByGenre(genre: string): Observable<{ results: MovieModel[] }> {
-  return this.httpClient.get<{ results: MovieModel[] }>(
+getMoviesByGenre(genreId: string): Observable<{ results: TMDBMovieModel[] }> {
+  return this.httpClient.get<{ results: TMDBMovieModel[] }>(
     `/discover/movie`,
     {
       headers: {
-        Authorization: `Bearer ${tmdbApiReadAccessKey}`,
+        Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
       },
       params: {
-          with_genres: genre
-      }
+        with_genres: genreId,
+      },
     }
   );
 }

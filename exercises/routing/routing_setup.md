@@ -11,12 +11,12 @@ You will continue bootstrapping and configuring the angular `Router` to setup ro
 
 In the end you will have accomplished the following goals:
 
-* bootstrap & configure the `router`
+* provided & configured the `router`
 * added a `RouterOutlet`
 * implemented a routable component
 * default route to `list/popular`
 
-## Create movie-list-page component
+## 1. Create MovieListPage component
 
 Let's start by introducing a dedicated, routable component. 
 Introduce a new component: `MovieListPageComponent`.
@@ -31,11 +31,12 @@ ng g c movie/movie-list-page
 
 </details>
 
-The `MovieListPageComponent` in its first state should just do what the `AppComponent`
-did before.
+The `MovieListPageComponent` in its first state should just do what the `AppComponent` did before.
 
 Please move (just the code, don't delete any component pls!!) everything related to movies (movie-list, favorite-widget, etc.)
 including the data-fetching from `AppComponent` to `MovieListPageComponent`.
+
+The `AppComponent`s class should be empty. The template should also be empty besides the remaining `<app-shell></app-shell>`.
 
 You can also safely remove all imports from `AppComponent`.
 
@@ -44,32 +45,69 @@ You can also safely remove all imports from `AppComponent`.
 
 ```ts
 // movie-list-page.component.ts
-import { NgModule } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+
+import { Component, computed, inject, signal } from '@angular/core';
+
+import { MovieModel, TMDBMovieModel } from '../../shared/model/movie.model';
+import { MovieService } from '../movie.service';
+import { MovieListComponent } from '../movie-list/movie-list.component';
 
 @Component({
-  /** **/,
-  standalone: true
+  selector: 'movie-list-page',
+  standalone: true,
+  imports: [MovieListComponent],
+  template: `
+    <div class="favorite-widget">
+      @for (fav of favoriteMovies(); track fav; let last = $last) {
+        <span>{{ fav.title }}</span>
+        @if (!last) {
+          <span>•</span>
+        }
+      }
+    </div>
+    @if (loading()) {
+      <div class="loader"></div>
+    } @else {
+      <movie-list
+        [movies]="movies()"
+        [favoriteMovieIds]="favoriteMovieIds()"
+        (toggleFavorite)="toggleFavorite($event)" />
+    }
+  `,
+  styles: ``,
 })
 export class MovieListPageComponent {
-  movies$: Observable<{ results: MovieModel[]}>;
-  
-  constructor(
-    private httpClient: HttpClient
-  ) { }
-  
-  ngOnInit() {
-    // destruct variables
-    const { tmdbBaseUrl, tmdbApiReadAccessKey } = environment;
-    this.movies$ = this.httpClient.get<{ results: MovieModel[]}>(
-      `${tmdbBaseUrl}/3/movie/popular`,
-      {
-        headers: {
-          Authorization: `Bearer ${tmdbApiReadAccessKey}`,
-        },
+  movies = signal<TMDBMovieModel[]>([]);
+
+  loading = computed(() => {
+    return this.movies().length === 0;
+  });
+
+  favoriteMovieIds = signal(new Set<string>(), {
+    equal: () => false,
+  });
+
+  favoriteMovies = computed(() =>
+    this.movies().filter(movie => this.favoriteMovieIds().has(movie.id))
+  );
+
+  private movieService = inject(MovieService);
+
+  constructor() {
+    this.movieService.getMovies('popular').subscribe(data => {
+      this.movies.set(data.results);
+    });
+  }
+
+  toggleFavorite(movie: MovieModel) {
+    this.favoriteMovieIds.update(favoriteMovieIds => {
+      if (favoriteMovieIds.has(movie.id)) {
+        favoriteMovieIds.delete(movie.id);
+      } else {
+        favoriteMovieIds.add(movie.id);
       }
-    );
+      return favoriteMovieIds;
+    });
   }
 }
 
@@ -89,204 +127,118 @@ export class MovieListPageComponent {
 
 </details>
 
-## Setup AppRouting module
+## 2. Create Routes & provide Router
 
-Now that we have a component dedicated for our router to work with, all what's left is to configure
-the router.
+Now that we have a component dedicated for our router to work with, all what's left is to provide and configure it.
 
-Create an `AppRoutingModule` next to `AppModule` (`--flat`)
+Create a new `src/app/app.routes.ts` file.
 
-<details>
-    <summary>generate AppRoutingModule</summary>
-
-```bash
-# flat means that we don't want to create a dedicated folder for it
-
-ng g m app-routing --flat
-```
-</details>
-
-Create a `const routes: Routes` and configure two routes.
+It should export a `export const routes: Routes` and which configures two routes:
 
 * `list/popular` to `MovieListPageComponent`
 * `''` redirecting to `list/popular`
 
-in the `AppRoutingModule` you need to import the `RouterModule.forRoot()` modules and pass the `routes`
-const as arguments to it.
-
-It is very convenient to add the `RouterModule` not only to the `imports` section, but as well to the `exports`.
+> [!TIP]
+> `Routes` is an interface coming from `@angular/router` which defines the shape of an array of `Route`.
 
 <details>
-    <summary>AppRoutingModule implementation</summary>
+  <summary>app.routes.ts</summary>
 
 ```ts
-// app-routing.module.ts
-import { RouterModule, Routes } from '@angular/router';
+// src/app/app.routes.ts
+import { Routes } from '@angular/router';
 
-const routes: Routes = [
-    {
-        path: 'list/popular',
-        component: MovieListPageComponent
-    },
-    {
-        path: '',
-        redirectTo: '/list/popular',
-        pathMatch: 'full',
-    },
+import { MovieListPageComponent } from './movie/movie-list-page/movie-list-page.component';
+
+export const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'list/popular',
+  },
+  {
+    path: 'list/popular',
+    component: MovieListPageComponent,
+  },
 ];
 
-// NgModule definition
-imports: [
-    RouterModule.forRoot(routes)
-],
-exports: [RouterModule] // for convenience only
-```
-
-Don't forget to import the `AppRoutingModule` into the `AppModule`
-
-```ts
-// app.module.ts
-
-imports: [AppRoutingModule]
 
 ```
+
 </details>
 
+Now we are going to tell our application that we want to actually use the router. For this, go to the 
+`app.config.ts` file and put the `provideRouter` provider function from the `@angular/router` package
+to the list of `providers`.
+
+It requires an input of `Routes`. Import the const we have create before and give it the function as argument.
+
+<details>
+  <summary>provideRouter(routes)</summary>
+
+```ts
+// src/app/app.config.ts
+
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes'; // 👈️
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    /* other code */
+    provideRouter(routes), // 👈️
+    /* other code */
+  ],
+};
+
+
+```
+
+</details>
+
+Well done, it's just one more step to have router setup completed!
+
+## 3. Place RouterOutlet
+
 Now we should tell our application where to render the outcome of the router.
-Go ahead and add a `router-outlet` to the `AppComponent`'s template. This will tell the router to load the configured component
+Go ahead and add a `<router-outlet />` to the `AppComponent`'s template. This will tell the router to load the configured component
 into the outlet if the path matches.
+
+Don't forget to put `RouterOutlet` to the list of imports of the `AppComponent`
 
 <details>
     <summary>use RouterOutlet</summary>
 
-```html
-<!-- app.component.html -->
+```ts
+// src/app/app.component.ts
 
-<app-shell>
-    <router-outlet></router-outlet>
-</app-shell>
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
+import { AppShellComponent } from './app-shell/app-shell.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [AppShellComponent, RouterOutlet],
+  template: `
+    <app-shell>
+      <router-outlet />
+    </app-shell>
+  `,
+})
+export class AppComponent {}
+
 ```
 
 </details>
 
-You can also remove any typescript code from the `AppComponent`, it's just an empty class now!
+If you haven't already, you can now remove any typescript code from the `AppComponent`, it's just an empty class now!
+
+
+Congratulations, the router setup is completed. 
 
 Serve the application. The router should navigate you automatically to `list/popular` if you try to navigate to `/`,
 you should see movie-list-page being rendered now.
 
-An invalid route though should end up in an error, we will fix that in the next step :).
-
-## 404 page
-
-Please try to enter any invalid route into the address-bar of your browser (e.g. `list/populardawdaw`), you will see the application navigates back to the default
-route and throw an error in the console.
-
-`Error: Uncaught (in promise): Error: Cannot match any routes. URL Segment: 'list/populardawdaw'`
-
-Let's build a **beautiful** 404 page in case of a user entering an invalid url
-
-Create a new `NotFoundPageComponent`. Create it either as `SCAM` or `standalone` component.
-
-If you create it as `SCAM`, you don't need to export it, though. We only plan to configure a
-route for it.
-
-It does not need any typescript logic whatsoever but just should have a template showing the
-user that this page is invalid and giving him a link back to a valid site.
-
-In the end you should make sure that the new `NotFoundPageComponent` is configured to be shown as
-wildcard (`**`) route.
-
-<details>
-  <summary>Generate NotFoundPageComponent</summary>
-
-```bash
-ng g c not-found-page --standalone
-```
-
-</details>
-
-<details>
-    <summary>NotFoundPageComponent implementation</summary>
-
-```ts
-import { Component } from '@angular/core';
-
-@Component({
-  imports: [SvgIconModule],
-  standalone: true
-})
-export class NotFoundPageComponent {}
-```
-
-```html
-<!-- not-found-page.component.html -->
-
-<div class="not-found-container">
-    <svg-icon size="350px" name="error"></svg-icon>
-    <h1 class="title">Sorry, page not found</h1>
-    <a class="btn" routerLink="/list/popular">See popular</a>
-</div>
-```
-
-```scss
-/* not-found.component.scss */
-
-:host {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.not-found-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.title {
-  text-align: center;
-  font-size: 4rem;
-  font-weight: 700;
-  margin: 3rem 1rem;
-}
-```
-</details>
-
-After you've implemented the `NotFoundPageComponent`, the only thing left is to configure it to be shown as
-wildcard (`**`) route.
-
-For this, adjust the `AppRoutingModule` with the new router config and add the `NotFoundPageComponent` to the `imports` section
-of the `AppModule`.
-
-<details>
-    <summary>Router Configuration</summary>
-
-```ts
-// app-routing.module.ts
-import { RouterModule, Routes } from '@angular/router';
-
-RouterModule.forRoot([
-    // other configuration
-    {
-        path: '**',
-        component: NotFoundPageComponent
-    }
-])
-```
-
-important: we need to import the module in the app.module for now
-
-```ts
-// app.module.ts
-
-imports: [
-    /** other imports **/,
-    NotFoundPageComponent
-]
-```
-
-</details>
-
-Well done! Serve the application and again try enter an invalid url. The application now should display the 404 page component instead.
-Congratulations, you have successfully implemented a basic router setup for your application :).
+An invalid route though should end up in an error, we will fix that soon!
