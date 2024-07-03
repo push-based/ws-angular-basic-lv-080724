@@ -1,7 +1,7 @@
-# Exercise: Services & Dependency Injection
+# Exercise: Services & Dependency Injection intro
 
 In this exercise you will learn a new building block of the angular ecosystem, `Services`, or rather `@Injectable()`.
-Furthermore, you will get to know the basics of angulars dependency injection system.
+Furthermore, you will get to know the basics of angulars dependency injection system and the new `inject` method.
 
 You will introduce the service `MovieService` which will serve as our abstraction layer for accessing the `TMDBMovieApi`.
 
@@ -31,7 +31,8 @@ export class MovieService {
 
 </details>
 
-As we want to fetch data in this service, inject the `HttpService`.
+As we want to fetch data in this service, inject the `HttpService`. Instead of using the constructor based injection,
+use the `inject` method provided by the `@angular/core` package.
 
 <details>
   <summary>Inject `HttpService`</summary>
@@ -93,15 +94,16 @@ export class MovieService {
 
 Now we want to make use of our `MovieService` in the `AppComponent`.
 
-<details>
-    <summary>Use MovieService</summary>
-
 Go to the `AppComponent`, inject the `MovieService` and replace it with the `HttpClient`.
+Also replace the constructor based injection with the new `inject` method.
 
 Use one of the following categories as input:
 * `popular`
 * `top_rated`
 * `upcoming`
+
+<details>
+    <summary>Use MovieService</summary>
 
 ```ts
 // app.component.ts
@@ -145,7 +147,7 @@ Information for the movies by genre request:
 
 getGenres(): Observable<{ genres: TMDBMovieGenreModel[] }> {
   return this.httpClient.get<{ genres: TMDBMovieGenreModel[] }>(
-    `${environment.tmdbBaseUrl}/genre/movie/list`,
+    `${environment.tmdbBaseUrl}/3/genre/movie/list`,
     {
       headers: {
         Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
@@ -156,7 +158,7 @@ getGenres(): Observable<{ genres: TMDBMovieGenreModel[] }> {
 
 getMoviesByGenre(genreId: string): Observable<{ results: TMDBMovieModel[] }> {
   return this.httpClient.get<{ results: TMDBMovieModel[] }>(
-    `/discover/movie`,
+    `${environment.tmdbBaseUrl}/3/discover/movie`,
     {
       headers: {
         Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,

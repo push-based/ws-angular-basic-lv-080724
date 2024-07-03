@@ -10,10 +10,26 @@
           "prefix": "",
           "style": "scss",
           "standalone": true,
+          "skipTests": true,
           "inlineTemplate": true,
           "inlineStyle": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": true
         }
-      },
+      }, ,
       "root": "",
       "sourceRoot": "src",
       "prefix": "",

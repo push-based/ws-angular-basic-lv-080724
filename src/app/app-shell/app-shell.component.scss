@@ -113,6 +113,8 @@
 
     a {
       @include d-flex-v;
+    }
+    fast-svg {
       color: var(--palette-secondary-main);
     }
 

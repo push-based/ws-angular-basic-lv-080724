@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { DarkModeToggleComponent } from '../ui/component/dark-mode-toggle/dark-mode-toggle.component';
@@ -17,6 +18,7 @@ import { SideDrawerComponent } from '../ui/component/side-drawer/side-drawer.com
     HamburgerButtonComponent,
     SearchBarComponent,
     DarkModeToggleComponent,
+    RouterLink,
   ],
 })
 export class AppShellComponent {

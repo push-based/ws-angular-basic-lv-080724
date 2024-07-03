@@ -13,35 +13,26 @@
     </picture>
   </a>
   <nav class="navigation">
+    <h3 class="navigation--headline">Discover</h3>
+
+    <!-- Insert popular, top_rated & upcoming links here -->
 
     <!--
-      Category Links:
-      <h3 class="navigation--headline">Categories</h3>
       <a
-      class="navigation--link"
-      [routerLink]="['/list', 'popular']"
-      routerLinkActive="active">
+      class="navigation--link">
       <div class="navigation--menu-item">
-        <fast-svg class="navigation--menu-item-icon" name="popular"></fast-svg>
+        <fast-svg class="navigation--menu-item-icon" name="popular" />
         Popular
       </div>
     </a>
     top_rated
     upcoming
     -->
-    <!--
-      genre links
-      <h3 class="navigation--headline">Genres</h3>
-      <a
-        class="navigation--link"
-        [routerLink]="['/list', 'genre', genre.id]"
-        routerLinkActive="active">
-        <div class="navigation--menu-item">
-          <fast-svg class="navigation--menu-item-icon" name="genre" />
-          {{ genre.name }}
-        </div>
-      </a>
-    -->
+
+    <h3 class="navigation--headline">Genres</h3>
+
+    <!-- Insert Genre links here -->
+
   </nav>
   <div class="menu-footer">
     <a
@@ -70,7 +61,7 @@
     <div class="ui-toolbar--widget-container">
       <ui-search-bar></ui-search-bar>
       <ui-dark-mode-toggle></ui-dark-mode-toggle>
-      <fast-svg name="account"></fast-svg>
+      <fast-svg name="account" size="30"></fast-svg>
     </div>
   </div>
   <div class="content">
