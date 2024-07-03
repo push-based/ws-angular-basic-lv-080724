@@ -1,10 +1,10 @@
 # Exercise: HttpInterceptors
 
-In this exercise you will get to know another very useful tool of angulars `HttpModule`: `HttpInterceptor`s.
+In this exercise you will get to know another very useful tool of angulars `HttpClient`: `HttpInterceptor`s.
 `HttpInterceptor`s allow you to define custom behavior which gets applied to any `HttpRequest` fired with the `HttpClient`.
-This is especially useful for Errorhandling and Authentication.
+This is especially useful for Errorhandling, Logging and Authentication.
 
-## introduce ReadAccessInterceptor
+## 1. Introduce ReadAccessInterceptor
 
 Your task is to implement an `HttpInterceptor` which takes care of sending the required `Authorization` header whenever we want to
 communicate with the `tmdb` api.
@@ -26,20 +26,28 @@ If you don't read the solution, you may want to [read here](https://angular.io/g
 ```ts
 // read-access.interceptor.ts
 
-intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return next.handle(
-        request.clone({
-            setHeaders: {
-                Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`
-            },
-        })
-    );
-}
+import { HttpInterceptorFn } from '@angular/common/http';
+
+import { environment } from '../environments/environment';
+
+export const readAccessInterceptor: HttpInterceptorFn = (req, next) => {
+  return next(
+    req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
+      },
+    })
+  );
+};
 ```
 
 </details>
 
-After finishing the implementation, we need to provide the `ReadAccessInterceptor` to our application. Otherwise, our application
+Well done, in the next we are going to make use of the new Interceptor!
+
+## 2. Use the readAccessInterceptor
+
+After finishing the implementation, we need to tell the `HttpClient` to use it. Otherwise, our application
 doesn't know about its existence and won't execute it at all.
 
 create a [`StaticProvider`](https://angular.io/api/core/StaticProvider) which provides the `ReadAccessInterceptor`

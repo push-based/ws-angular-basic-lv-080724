@@ -2,31 +2,36 @@
 
 In this exercise you will learn the basics of angulars routing system.
 The goal of this exercise is to create your first set of components which are accessible
-via the router. You will implement a dedicated component to display the current list of movies.
+via the router. You will implement a dedicated component to display the current list of movies
+as well as provide a 404 page in case a wrong address was entered.
 
 For this you will introduce a new `MoviePageComponent` which will handle the routing
-and display the current movies for you.
+and the display the current movies for you.
 
-You will continue bootstrapping and configuring the angular `Router` to setup routes and manage redirects for you.
+You will continue creating a root level `RoutingModule` to configure our Router and manage redirects for you.
 
 In the end you will have accomplished the following goals:
 
-* bootstrap & configure the `router`
-* added a `RouterOutlet`
-* implemented a routable component
 * default route to `list/popular`
+* not found page (with `NotFoundPageComponent`)
 
 ## Create movie-list-page component
 
 Let's start by introducing a dedicated, routable component. 
-Introduce a new component: `MovieListPageComponent`.
+Introduce a new `MovieListPageComponent`, either as `SCAM` or `standalone` component.
+
+If you've chosen to use a Module:
+
+The `MovieListPageModule` does not need to export the `MovieListPageComponent`, we plan to
+only configure a route to it. You also need to import `RouterModule.forChild()` and configure
+an empty path route to the `MovieListPageComponent`.
 
 <details>
-    <summary>generate MovieListPageComponent</summary>
+    <summary>generate component</summary>
 
 ```bash
 # generate component
-ng g c movie/movie-list-page
+ng g c movie/movie-list-page --standalone
 ```
 
 </details>
@@ -34,10 +39,10 @@ ng g c movie/movie-list-page
 The `MovieListPageComponent` in its first state should just do what the `AppComponent`
 did before.
 
-Please move (just the code, don't delete any component pls!!) everything related to movies (movie-list, favorite-widget, etc.)
+Please move (just the code, don't delete any component pls!!) everything related to movie-list
 including the data-fetching from `AppComponent` to `MovieListPageComponent`.
 
-You can also safely remove all imports from `AppComponent`.
+Also remove the import to `MovieModule` in `AppModule`.
 
 <details>
     <summary>MovieListPageComponent implementation</summary>
