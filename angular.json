@@ -29,7 +29,7 @@
         "@schematics/angular:interceptor": {
           "skipTests": true
         }
-      }, ,
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "",
