@@ -88,6 +88,16 @@ body.dark img:not([src*='.svg']) {
   margin-bottom: 4rem;
 }
 
+.movie-card {
+  cursor: pointer;
+}
+
+.no-movies {
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+}
+
 .favorite-indicator {
   border: unset;
   background: transparent;

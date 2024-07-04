@@ -109,7 +109,7 @@ In best case it would redirect the user to the `not-found` route when the error 
 If you like, you can also send an `alert` to the user.
 
 When u are done implementing it, try to produce an error. You could manipulate the http request responses with the help
-of the devtools.
+of the devtools. Or you just `throw new Error` somewhere in the pipeline.
 
 ![override-contents.png](../images/override-contents.png)
 

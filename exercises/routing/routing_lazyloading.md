@@ -301,16 +301,16 @@ import { MovieListComponent } from '../movie-list/movie-list.component';
   styles: ``,
 })
 export class MovieListPageComponent {
-  movies = signal<TMDBMovieModel[]>([]);
+  movies = signal<TMDBMovieModel[] | null>(null);
 
-  loading = computed(() => this.movies().length === 0);
+  loading = computed(() => !this.movies());
 
   favoriteMovieIds = signal(new Set<string>(), {
     equal: () => false,
   });
 
   favoriteMovies = computed(() =>
-    this.movies().filter(movie => this.favoriteMovieIds().has(movie.id))
+    (this.movies() ?? []).filter(movie => this.favoriteMovieIds().has(movie.id))
   );
 
   private movieService = inject(MovieService);
@@ -318,7 +318,7 @@ export class MovieListPageComponent {
 
   constructor() {
     this.route.params.subscribe(params => {
-      this.movies.set([]);
+      this.movies.set(null);
       if (params.query) {
         this.movieService.searchMovies(params.query).subscribe(data => {
           this.movies.set(data.results);

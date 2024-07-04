@@ -185,6 +185,99 @@ Bind the search callback to the `(searchSubmit)` output and pass it's `$event` a
 
 Well done! You can try out searching via the search bar now :)
 
+## 4. Tell something about empty state
+
+You might've noticed that the screen is showing an eternal loading spinner in case of a search has 0 results.
+Let's also give our users a hint about that the search term needs to adjusted.
+
+### 4.1 Introduce empty state
+
+The first thing we need to is to differentiate between `empty` & `loading`. Right now we cannot distinguish between
+those.
+The `empty` state should be an `empty` array, whilest `loading` should be a `nullish` value.
+
+In the `MovieListPageComponent`, adjust the typing of the `movies: Signal<TMDBMovieModel[]>` to be `TMDBMovieModel[] | null`.
+Also initialize & reset its value with a `null` value.
+
+Then adjust also:
+* `loading` computed => `!!this.movies()`
+* `favoriteMovies` computed => needs to be aware of movies can return null now
+
+
+<details>
+  <summary>MovieListPageComponent</summary>
+
+```ts
+// movie-list-page.component.ts
+
+export class MovieListPageComponent {
+  //                                  👇️     👇️
+  movies = signal<TMDBMovieModel[] | null>(null);
+  //                            👇️
+  loading = computed(() => !this.movies());
+
+  /* ... */
+
+  favoriteMovies = computed(() =>
+    // 👇️
+    (this.movies() ?? []).filter(movie => this.favoriteMovieIds().has(movie.id))
+  );
+
+  constructor() {
+    this.route.params.subscribe(params => {
+      this.movies.set(null); // 👈️👈️
+      
+      /**/
+    });
+  }
+}
+
+```
+
+</details>
+
+Great! The eternal loading spinner should be fixed now, try it out!
+
+### 4.2 Visualize empty state
+
+We still just see a blank page when there is no result, let's also fix that!
+For this we want to adjust the code of `MovieListComponent` (`movie-list`).
+
+1. Open `src/app/movie/movie-list/movie-list.component.ts`.
+2. Introduce a new computed `empty`: `empty = compued(() => this.movies().length === 0)`
+3. Use @if (empty()) to show the following snippet
+
+```html
+<div class="no-movies">
+  <fast-svg name="sad" size="50" />
+  There are no movies to show
+</div>
+```
+
+<details>
+  <summary>Visualize empty state</summary>
+
+```html
+<!-- movie-list.component.ts -->
+
+@if (empty()) {
+  <div class="no-movies">
+    <fast-svg name="sad" size="50" />
+    There are no movies to show
+  </div>
+}
+```
+
+```ts
+// movie-list.component.ts 
+
+empty = computed(() => this.movies().length === 0);
+
+```
+
+</details>
+
+Great job! Please go ahead an try out a search that results in an empty response.
 
 ## Full Solution
 
@@ -269,16 +362,16 @@ import { MovieListComponent } from '../movie-list/movie-list.component';
   styles: ``,
 })
 export class MovieListPageComponent {
-  movies = signal<TMDBMovieModel[]>([]);
+  movies = signal<TMDBMovieModel[] | null>(null);
 
-  loading = computed(() => this.movies().length === 0);
+  loading = computed(() => !this.movies());
 
   favoriteMovieIds = signal(new Set<string>(), {
     equal: () => false,
   });
 
   favoriteMovies = computed(() =>
-    this.movies().filter(movie => this.favoriteMovieIds().has(movie.id))
+    (this.movies() ?? []).filter(movie => this.favoriteMovieIds().has(movie.id))
   );
 
   private movieService = inject(MovieService);
@@ -286,7 +379,7 @@ export class MovieListPageComponent {
 
   constructor() {
     this.route.params.subscribe(params => {
-      this.movies.set([]);
+      this.movies.set(null);
       if (params.query) {
         this.movieService.searchMovies(params.query).subscribe(data => {
           this.movies.set(data.results);
@@ -346,6 +439,67 @@ export const routes: Routes = [
   },
 ];
 
+
+```
+
+</details>
+
+<details>
+  <summary>MovieListComponent</summary>
+
+```ts
+
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  output,
+} from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { FastSvgComponent } from '@push-based/ngx-fast-svg';
+
+import { MovieModel } from '../../shared/model/movie.model';
+import { MovieCardComponent } from '../movie-card/movie-card.component';
+
+@Component({
+  selector: 'movie-list',
+  standalone: true,
+  imports: [MovieCardComponent, RouterLink, FastSvgComponent],
+  template: `
+    @if (empty()) {
+      <div class="no-movies">
+        <fast-svg name="sad" size="50" />
+        There are no movies to show
+      </div>
+    }
+    @for (movie of movies(); track movie.id) {
+      <movie-card
+        [routerLink]="['/movie', movie.id]"
+        [movie]="movie"
+        [favorite]="favoriteMovieIds().has(movie.id)"
+        (favoriteChange)="toggleFavorite.emit(movie)" />
+    }
+  `,
+  styles: `
+    :host {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 35rem));
+      gap: 4rem 2rem;
+      place-content: space-between space-evenly;
+      align-items: start;
+      position: relative;
+    }
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MovieListComponent {
+  movies = input.required<MovieModel[]>();
+  favoriteMovieIds = input(new Set<string>());
+  toggleFavorite = output<MovieModel>();
+
+  empty = computed(() => this.movies().length === 0);
+}
 
 ```
 

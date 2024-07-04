@@ -54,6 +54,8 @@ import { TMDBMovieDetailsModel } from '../shared/model/movie-details.model';
 export class MovieService {
   private httpClient = inject(HttpClient);
 
+  /* other methods */
+  
   getMovieCredits(movieId: string): Observable<TMDBMovieCreditsModel> {
     return this.httpClient.get<TMDBMovieCreditsModel>(
       `${environment.tmdbBaseUrl}/3/movie/${movieId}/credits`
@@ -73,12 +75,7 @@ export class MovieService {
       `${environment.tmdbBaseUrl}/3/movie/${movieId}`
     );
   }
-
-  getMovies(category: string): Observable<{ results: TMDBMovieModel[] }> {
-    return this.httpClient.get<{ results: TMDBMovieModel[] }>(
-      `${environment.tmdbBaseUrl}/3/movie/${category}`
-    );
-  }
+  
 }
 
 
@@ -88,137 +85,22 @@ export class MovieService {
 
 ## 1. Generate MovieDetailPageComponent
 
-Generate a component `MovieDetailPageComponent`.
+Generate a component `MovieDetailPageComponent`, you might want to use `--inlineStyle=false` this time.
 
 <details>
     <summary> Generate MovieDetailPageComponent </summary>
 
 ```bash
-ng g c movie/movie-detail-page
+ng g c movie/movie-detail-page --inlineStyle=false
 ```
 
-</details>
-
-Now we can configure our lazy-loaded route in the `app.routing.ts` file.
-The route should load the `MovieDetailPageComponent` at the `/movie` route and have a parameter for the `:id`. 
-
-If you don't stick to the solution, you can assign any custom route you want, it doesn't matter. Just be sure to add
-a parameter for the id :)
-
-<details>
-    <summary> Router Config </summary>
-
-```ts
-// app.routing.ts
-
-{
-    path: 'movie/:id',
-    loadComponent: () => import('./movie/movie-detail-page/movie-detail-page.component')
-      .then(m => m.MovieDetailPageComponent)
-},
-
-```
-
-</details>
-
-## 1. Implement navigation
-
-We also need a way to navigate to the `MovieDetailPageComponent`.
-
-Consider using the `routerLink` directive on a `movie-card` in the template of `MovieListComponent` for it.
-
-<details>
-    <summary> show solution </summary>
-
-```html
-// movie-list.component.html
-
-<movie-card
-  [routerLink]="['movie', movie.id]"
-  *ngFor=""></movie-card>
-
-```
-
-</details>
-
-## Implement MovieDetailPageComponent
-
-Now it's time to implement our actual `MovieDetailPageComponent`.
-
-The pattern is very similar to the one we use `MovieListPageComponent`.
-We need to make sure to use the `ActivatedRoute` in order to `subscribe` to the `params`.
-
-With the `id` from our params we now can make the request to the `MovieDetail` and the `MovieRecommendations` endpoints.
-
-make sure to provide two `Observable` values for the template:
-* `movie$: Observable<TMBD...>`
-* `credits$: Observable<TMDBMovieCreditsModel>`
-* `recommendations$: Observable<{ results: MovieModel[] }>`
-
-<details>
-    <summary> MovieDetailPageComponent implementation </summary>
-
-```ts
-// movie-detail-page.component.ts
-
-movie$: Observable<TMDBMovieDetailsModel>;
-credits$: Observable<TMDBMovieCreditsModel>;
-recommendations$: Observable<{ results: MovieModel[] }>;
-
-constructor(
-    private movieService: MovieService,
-    private activatedRoute: ActivatedRoute
-) { }
-
-ngOnInit(): void {
-    this.activatedRoute.params.subscribe(params => {
-        if (params.id) {
-            this.movie$ = this.movieService.getMovie(params.id);
-            this.recommendations$ = this.movieService.getMovieRecommendations(params.id);
-            this.credits$ = this.movieService.getMovieCredits(params.id);
-        }
-    });
-}
-```
-
-</details>
-
-For everyone who struggles with importing modules, here the complete list of modules to import
-
-<details>
-    <summary> show module imports </summary>
-
-```ts
-
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
-import { DetailGridModule } from '../../ui/component/detail-grid/detail-grid.module';
-import { SvgIconModule } from '../../ui/component/icons/icon.module';
-import { StarRatingModule } from '../../ui/pattern/star-rating/star-rating.module';
-import { MovieModule } from '../movie.module';
-
-@Component({
-    imports: [
-        CommonModule,
-        RouterModule.forChild(routes),
-        DetailGridModule,
-        SvgIconModule,
-        MovieModule,
-        StarRatingModule,
-    ],
-})
-export class MovieDetailPageComponent {}
-
-
-```
 </details>
 
 You don't need to mess around with the styling of the whole component, so please just copy these
 styles into the components' stylesheet file.
 
 <details>
-    <summary> show styles </summary>
+    <summary> movie-detail-page.component.scss </summary>
 
 ```scss
 @import "../../ui/token/mixins/flex";
@@ -229,14 +111,13 @@ styles into the components' stylesheet file.
   display: block;
 }
 
-.loader {
-  position: absolute;
-  z-index: 200;
-  top: 250px;
-}
-
 .movie-detail-wrapper {
   min-height: 500px;
+  .loader {
+    position: absolute;
+    z-index: 200;
+    top: 250px;
+  }
 }
 
 .movie-detail {
@@ -345,255 +226,234 @@ styles into the components' stylesheet file.
 ```
 </details>
 
-Now we should be ready to go to implement our template.
+## 2. Configure Router
 
-As a basis I will provide you a raw skeleton with everything you need to apply all the needed view bindings yourself.
+Now we can configure our lazy-loaded route in the `app.routes.ts` file.
+The route should load the `MovieDetailPageComponent` at the `/movie` route and have a parameter for the `:id`.
+
+If you don't stick to the solution, you can assign any custom route you want, it doesn't matter. Just be sure to add
+a parameter for the id :)
 
 <details>
-    <summary> show template </summary>
+    <summary> Router Config </summary>
 
-```html
-<div class="movie-detail-wrapper">
-  <!-- use movie$ -->
-  <!-- show loader when there is no movie -->
-  <ui-detail-grid>
-    <div detailGridMedia>
-      <!-- img w780, h1170 class="aspectRatio-2-3 fit-cover" -->
+```ts
+// app.routing.ts
 
-    </div>
-    <div detailGridDescription>
-      <header>
-        <!-- h1 title -->
-        <!-- h2 tagline -->
-      </header>
-      <section class="movie-detail--basic-infos">
-        <!-- ui-star-rating -->
-        <!-- vote_average -->
-        <div class="movie-detail--languages-runtime-release">
-            <strong>
-                <!-- spoken_languages[0]?.english_name --> /
-                <!-- runtime --> /
-                <!-- release_date | date: 'Y' -->
-            </strong>
-        </div>
-      </section>
-      <section>
-        <h3>The Genres</h3>
-        <div class="movie-detail--genres">
-          <!-- a class="movie-detail--genres-link" *ngFor="genres" -->
-            <a class="movie-detail--genres-link">
-                <svg-icon name="genre"></svg-icon>
-            </a>
-        </div>
-      </section>
-      <section>
-        <h3>The Synopsis</h3>
-        <!-- p overview || 'not available text' -->
-      </section>
-      <section>
-        <h3>The Cast</h3>
-        <div class="movie-detail--cast-list">
-          <div class="cast-list">
-            <!-- credits$ -->
-            <!-- class="movie-detail--cast-actor" -->
-            <!-- <img
-                loading="lazy"
-                [src]="
-                  c?.profile_path
-                    ? 'https://image.tmdb.org/t/p/w185' + c.profile_path
-                    : 'assets/images/no_poster_available.jpg'
-                "
-                [alt]="c.name"
-                [title]="c.name"
-              />
-              -->
-          </div>
-        </div>
-      </section>
-      <section class="movie-detail--ad-section-links">
-        <!-- homepage -->
-        <a
-          class="btn"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Website
-          <svg-icon class="btn__icon" name="website"></svg-icon>
-
-        </a>
-        <!-- (ngIf) ? imdb_id -->
-        <a
-          class="btn"
-          target="_blank"
-          rel="noopener noreferrer"
-          [href]="'https://www.imdb.com/title/'"
-        >
-          IMDB
-          <svg-icon class="btn__icon" name="imdb"></svg-icon>
-        </a>
-        <!-- TODO: create dialog with iframe embed -->
-        <!-- back function -->
-        <button class="btn primary-button">
-          <svg-icon class="btn__icon" name="back" size="1em"></svg-icon>&nbsp;Back
-        </button>
-      </section>
-    </div>
-  </ui-detail-grid>
-</div>
-<div>
-  <header>
-    <h1>Recommended</h1>
-    <h2>Movies</h2>
-  </header>
-
-  <!-- recommendations$ movie list with loader -->
-
-<!--  <movie-list></movie-list>-->
-
-</div>
+{
+  path: 'movie/:id',
+    loadComponent: () => import('./movie/movie-detail-page/movie-detail-page.component')
+  .then(m => m.MovieDetailPageComponent)
+},
 
 ```
 
 </details>
 
-If you have struggles with the implementation, here is the complete solution:
+We also need a way to navigate to the `MovieDetailPageComponent`.
+
+## 3. Implement Navigation
+
+Consider using the `routerLink` directive on a `movie-card` in the template of `MovieListComponent` for it.
 
 <details>
-    <summary> show full solution </summary>
-    
+    <summary> apply routerLink to `movie-card` </summary>
+
+```html
+// movie-list.component.ts
+
+@for (movie of movies(); track movie.id) {
+  <movie-card
+    [routerLink]="['/movie', movie.id]"
+    [movie]="movie"
+    [favorite]="favoriteMovieIds().has(movie.id)"
+    (favoriteChange)="toggleFavorite.emit(movie)" />
+}
+
+```
+
+</details>
+
+You can already try to navigate to the movie detail page.
+
+## 4. Implement MovieDetailPageComponent
+
+Now it's time to implement our actual `MovieDetailPageComponent`.
+
+The pattern is very similar to the one we use `MovieListPageComponent`.
+We need to make sure to use the `ActivatedRoute` in order to `subscribe` to the `params`.
+
+### 4.1 Fetch data from API
+
+With the `id` from our params we now can make the request to the `getMovieById`, `getMovieRecommendations` and the `getMovieCredits` endpoints.
+
+make sure to create three `Signal` values for the template:
+* `movie: Signal<TMBDMovieModel | null>` -> we need to type as `| null` otherwise we can't provide an initial value
+* `credits: Signal<TMDBMovieCreditsModel | null>` -> we need to type as `| null` otherwise we can't provide an initial value
+* `recommendations: Signal<TMBDMovieModel[] | null>` -> we need to type as `| null` as we want to differentiate between loading & empty
+
+Also don't forget to reset the signals on param changes.
+
+<details>
+    <summary> MovieDetailPageComponent Skeleton </summary>
+
 ```ts
-// movie-detail-page.component.ts
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
-recommendations$: Observable<{ results: MovieModel[] }>;
-credits$: Observable<TMDBMovieCreditsModel>;
-movie$: Observable<TMDBMovieDetailsModel>;
+import { TMDBMovieModel } from '../../shared/model/movie.model';
+import { TMDBMovieCreditsModel } from '../../shared/model/movie-credits.model';
+import { TMDBMovieDetailsModel } from '../../shared/model/movie-details.model';
+import { MovieService } from '../movie.service';
 
-constructor(
-    private movieService: MovieService,
-    private activatedRoute: ActivatedRoute
-) {}
+@Component({
+  selector: 'movie-detail-page',
+  standalone: true,
+  imports: [],
+  template: ` <p>movie-detail-page works!</p> `,
+  styleUrls: ['./movie-detail-page.component.scss'],
+})
+export class MovieDetailPageComponent {
+  route = inject(ActivatedRoute);
+  movieService = inject(MovieService);
 
-ngOnInit(): void {
-    this.activatedRoute.params.subscribe((params) => {
-        this.movie$ = this.movieService.getMovieById(params.id);
-        this.credits$ = this.movieService.getMovieCredits(params.id);
-        this.recommendations$ = this.movieService.getMovieRecommendations(
-            params.id
-        );
+  movie = signal<TMDBMovieDetailsModel | null>(null);
+  credits = signal<TMDBMovieCreditsModel | null>(null);
+  recommendations = signal<TMDBMovieModel[] | null>(null);
+
+  constructor() {
+    this.route.params.subscribe(params => {
+      // value resets!
+      this.movie.set(null);
+      this.credits.set(null);
+      this.recommendations.set(null);
+      /* service calls go here */
     });
+  }
 }
 ```
 
-```html
+</details>
 
+
+<details>
+  <summary>MovieDetailPage API Calls</summary>
+
+```ts
+
+// API calls:
+if (params.id) {
+  this.movieService.getMovieById(params.id).subscribe(movie => {
+    this.movie.set(movie);
+  });
+  this.movieService
+    .getMovieRecommendations(params.id)
+    .subscribe(({ results }) => {
+      this.recommendations.set(results);
+    });
+  this.movieService.getMovieCredits(params.id).subscribe(credits => {
+    this.credits.set(credits);
+  });
+}
+
+```
+
+</details>
+
+### 4.2 Template Bindings
+
+Now we should be ready to go to implement our template.
+
+As a basis I will provide you a raw skeleton with everything you need to apply all the needed view bindings yourself.
+
+<details>
+    <summary> MovieDetailPage Template Skeleton </summary>
+
+```html
 <div class="movie-detail-wrapper">
-  <ui-detail-grid *ngIf="(movie$ | async) as movie; else: loader">
+  <!-- use movie() -->
+  <!-- @if (movie()) { ui-detail-grid } @else { div.loader }-->
+  <ui-detail-grid>
     <div detailGridMedia>
-      <img class="aspectRatio-2-3 fit-cover"
-           [src]="movie.poster_path | movieImage"
-           [alt]="movie.title"
-           width="780px"
-           height="1170px">
+      <!--
+        [src]="movie: poster_path | movieImage: 780"
+        [alt]="movie: title"
+      -->
+      <img class="aspectRatio-2-3 fit-cover" width="780" height="1170" />
     </div>
-    <div detailGridDescription>
+    <div detailGridDescription class="movie-detail">
       <header>
-        <h1>{{ movie.title }}</h1>
-        <h2>{{ movie.tagline }}</h2>
+        <h1><!-- movie: title --></h1>
+        <h2><!-- movie: tagline --></h2>
       </header>
       <section class="movie-detail--basic-infos">
-        <ui-star-rating
-          [rating]="movie.vote_average"
-          [showRating]="true"
-        ></ui-star-rating>
+        <!-- ui-star-rating [rating]="movie: vote_average" -->
         <div class="movie-detail--languages-runtime-release">
           <strong>
-            {{ movie.spoken_languages[0]?.english_name }} /
-            {{ movie.runtime }} min /
-            {{ movie.release_date | date: 'Y' }}
+            <!-- movie: spoken_languages[0]?.english_name -->
+            /
+            <!-- movie: runtime -->
+            /
+            <!-- movie: release_date | date: 'Y' -->
           </strong>
         </div>
       </section>
       <section>
         <h3>The Genres</h3>
         <div class="movie-detail--genres">
-          <!-- class="movie-detail--genres-link" genre links -->
-          <a class="movie-detail--genres-link"
-               *ngFor="let genre of movie.genres">
-            <svg-icon name="genre"></svg-icon>
+          <!-- @for (genre .... ) {  } -->
+          <!-- <a class="movie-detail--genres-link" [routerLink]="['/genre', genre.id]">
+            <fast-svg name="genre" />
             {{ genre.name }}
-          </a>
+          <a/> -->
         </div>
       </section>
       <section>
         <h3>The Synopsis</h3>
-        <p>{{ movie.overview || 'Sorry, no overview available' }}</p>
+        <p><!-- movie: overview || 'No overview available' --></p>
       </section>
       <section>
         <h3>The Cast</h3>
         <div class="movie-detail--cast-list">
-          <div class="cast-list"
-               *ngIf="(credits$ | async) as credits">
-            <div class="movie-detail--cast-actor"
-                 *ngFor="let actor of credits.cast">
-              <img
-                loading="lazy"
-                [src]="
-                  actor?.profile_path
-                    ? 'https://image.tmdb.org/t/p/w185' + actor.profile_path
-                    : 'assets/images/no_poster_available.jpg'
-                "
-                [alt]="actor.name"
-                [title]="actor.name"
-              />
-            </div>
-            <!-- class="movie-detail--cast-actor" -->
+          <div class="cast-list">
+            <!-- @for (actor of credits().cast ...) {} -->
+            <!-- div class="movie-detail--cast-actor" -->
             <!-- <img
                 loading="lazy"
-                [src]="
-                  c?.profile_path
-                    ? 'https://image.tmdb.org/t/p/w185' + c.profile_path
-                    : 'assets/images/no_poster_available.jpg'
-                "
-                [alt]="c.name"
-                [title]="c.name"
+                [src]="actor.profile_path | movieImage: 185"
+                [alt]="actor.name"
+                [title]="actor.name"
               />
               -->
           </div>
         </div>
       </section>
       <section class="movie-detail--ad-section-links">
-        <!-- homepage -->
-        <a
-          class="btn"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Website
-          <svg-icon class="btn__icon" name="website"></svg-icon>
-
-        </a>
-        <!-- (ngIf) ? imdb_id -->
-        <a
-          class="btn"
-          target="_blank"
-          rel="noopener noreferrer"
-          [href]="'https://www.imdb.com/title/'"
-        >
-          IMDB
-          <svg-icon class="btn__icon" name="imdb"></svg-icon>
-        </a>
-        <!-- (ngIf) ? imdb_id -->
-        <a
-          class="btn"
-        >
-          Trailer
-          <svg-icon class="btn__icon" name="play"></svg-icon>
-        </a>
-        <!-- TODO: create dialog with iframe embed -->
-        <!-- back function -->
-        <button class="btn primary-button">
-          <svg-icon class="btn__icon" name="back" size="1em"></svg-icon>&nbsp;Back
-        </button>
+        <div class="section--content">
+          <!-- @if (movie: homepage) {} -->
+          <!--<a
+            class="btn"
+            [href]="movie: homepage"
+            target="_blank"
+            rel="noopener noreferrer">
+            Website
+            <fast-svg class="btn__icon" name="website" />
+          </a>-->
+          <!-- @if (movie().imdb_id) {} -->
+          <!--<a
+            class="btn"
+            target="_blank"
+            rel="noopener noreferrer"
+            [href]="'https://www.imdb.com/title/' + movie: imdb_id">
+            IMDB
+            <fast-svg class="btn__icon" name="imdb" />
+          </a>-->
+          <!-- back function -->
+          <button class="btn primary-button">
+            <fast-svg class="btn__icon" name="back" size="1em" />&nbsp;Back
+          </button>
+        </div>
+        
       </section>
     </div>
   </ui-detail-grid>
@@ -603,28 +463,190 @@ ngOnInit(): void {
     <h1>Recommended</h1>
     <h2>Movies</h2>
   </header>
-  <ng-container *ngIf="(recommendations$ | async) as recommendations; else: loader">
-
-    <movie-list
-      [movies]="recommendations.results"
-      *ngIf="recommendations.results.length > 0; else: noResult">
-    </movie-list>
-
-    <ng-template #noResult>
-      <div>No recommended movies</div>
-    </ng-template>
-
-  </ng-container>
-
-  <ng-template #loader>
-    <div class="loader"></div>
-  </ng-template>
-
+  <!-- @if (recommendations()) { <movie-list /> } @else { div.loader }-->
 </div>
+
+```
+
+</details>
+
+## Full Solution
+
+<details>
+  <summary>MovieDetailPageComponent</summary>
+
+```ts
+
+import { DatePipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FastSvgComponent } from '@push-based/ngx-fast-svg';
+
+import { TMDBMovieModel } from '../../shared/model/movie.model';
+import { TMDBMovieCreditsModel } from '../../shared/model/movie-credits.model';
+import { TMDBMovieDetailsModel } from '../../shared/model/movie-details.model';
+import { DetailGridComponent } from '../../ui/component/detail-grid/detail-grid.component';
+import { StarRatingComponent } from '../../ui/pattern/star-rating/star-rating.component';
+import { MovieService } from '../movie.service';
+import { MovieImagePipe } from '../movie-image.pipe';
+import { MovieListComponent } from '../movie-list/movie-list.component';
+
+@Component({
+  selector: 'movie-detail-page',
+  standalone: true,
+  imports: [
+    DetailGridComponent,
+    MovieImagePipe,
+    StarRatingComponent,
+    FastSvgComponent,
+    MovieListComponent,
+    DatePipe,
+    RouterLink,
+  ],
+  template: `
+    <div class="movie-detail-wrapper">
+      @if (movie()) {
+        <ui-detail-grid>
+          <div detailGridMedia>
+            <img
+              class="aspectRatio-2-3 fit-cover"
+              [src]="movie().poster_path | movieImage: 780"
+              [alt]="movie().title"
+              width="780"
+              height="1170" />
+          </div>
+          <div detailGridDescription class="movie-detail">
+            <header>
+              <h1>{{ movie().title }}</h1>
+              <h2>{{ movie().tagline }}</h2>
+            </header>
+            <section class="movie-detail--basic-infos">
+              <ui-star-rating [rating]="movie().vote_average" />
+              <div class="movie-detail--languages-runtime-release">
+                <strong>
+                  {{ movie().spoken_languages[0]?.english_name }}
+                  /
+                  {{ movie().runtime }}
+                  /
+                  {{ movie().release_date | date: 'Y' }}
+                </strong>
+              </div>
+            </section>
+            <section>
+              <h3>The Genres</h3>
+              <div class="movie-detail--genres">
+                @for (genre of movie().genres; track genre.id) {
+                  <a
+                    class="movie-detail--genres-link"
+                    [routerLink]="['/genre', genre.id]">
+                    <fast-svg name="genre" />
+                    {{ genre.name }}
+                  </a>
+                }
+              </div>
+            </section>
+            <section>
+              <h3>The Synopsis</h3>
+              <p>{{ movie().overview || 'no overview available' }}</p>
+            </section>
+            <section>
+              <h3>The Cast</h3>
+              <div class="movie-detail--cast-list">
+                <div class="cast-list">
+                  @for (actor of credits().cast; track actor.id) {
+                    <div class="movie-detail--cast-actor">
+                      <img
+                        loading="lazy"
+                        [src]="actor.profile_path | movieImage: 185"
+                        [alt]="actor.name"
+                        [title]="actor.name" />
+                    </div>
+                  }
+                </div>
+              </div>
+            </section>
+            <section class="movie-detail--ad-section-links">
+              <div class="section--content">
+                @if (movie().homepage) {
+                  <a
+                    class="btn"
+                    [href]="movie().homepage"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Website
+                    <fast-svg class="btn__icon" name="website" />
+                  </a>
+                }
+                @if (movie().imdb_id) {
+                  <a
+                    class="btn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [href]="'https://www.imdb.com/title/' + movie().imdb_id">
+                    IMDB
+                    <fast-svg class="btn__icon" name="imdb" />
+                  </a>
+                }
+                <!-- back function -->
+                <button class="btn primary-button">
+                  <fast-svg
+                    class="btn__icon"
+                    name="back"
+                    size="1em" />&nbsp;Back
+                </button>
+              </div>
+            </section>
+          </div>
+        </ui-detail-grid>
+      } @else {
+        <div class="loader"></div>
+      }
+    </div>
+    <div>
+      <header>
+        <h1>Recommended</h1>
+        <h2>Movies</h2>
+      </header>
+      @if (recommendations()) {
+        <movie-list [movies]="recommendations()" />
+      } @else {
+        <div class="loader"></div>
+      }
+    </div>
+  `,
+  styleUrls: ['./movie-detail-page.component.scss'],
+})
+export class MovieDetailPageComponent {
+  route = inject(ActivatedRoute);
+  movieService = inject(MovieService);
+
+  movie = signal<TMDBMovieDetailsModel | null>(null);
+  credits = signal<TMDBMovieCreditsModel | null>(null);
+  recommendations = signal<TMDBMovieModel[] | null>(null);
+
+  constructor() {
+    this.route.params.subscribe(params => {
+      this.movie.set(null);
+      this.credits.set(null);
+      this.recommendations.set(null);
+      if (params.id) {
+        this.movieService.getMovieById(params.id).subscribe(movie => {
+          this.movie.set(movie);
+        });
+        this.movieService
+          .getMovieRecommendations(params.id)
+          .subscribe(({ results }) => {
+            this.recommendations.set(results);
+          });
+        this.movieService.getMovieCredits(params.id).subscribe(credits => {
+          this.credits.set(credits);
+        });
+      }
+    });
+  }
+}
 
 
 ```
+
 </details>
-
-
-

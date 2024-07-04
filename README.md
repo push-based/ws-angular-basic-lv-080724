@@ -61,8 +61,8 @@ npm run start
 8. [Dependency Injection: InjectionToken](./exercises/dependency%20injection/injection-tokens.md)
 9. [Async Data: HttpInterceptors](exercises/async%20data%20-%20http/http-interceptors.md)
 10. [Wrap up: MovieDetailPage](./exercises/wrap-up_detail-page.md)
-11. [Change Detection: DirtyCheck](./exercises/)
-12. [Change Detection: OnPush](./exercises/change-detection%20-%20OnPush.md)
+11. [Change Detection: DirtyCheck](./exercises/change%20detection/change-detection%20-%20Dirty%20Check.md)
+12. [Change Detection: OnPush](./exercises/change%20detection/change-detection%20-%20OnPush.md)
 
 
 ### Day 3
