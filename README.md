@@ -67,7 +67,7 @@ npm run start
 
 1. [Change Detection: DirtyCheck](./exercises/change%20detection/change-detection%20-%20Dirty%20Check.md)
 2. [Change Detection: OnPush](./exercises/change%20detection/change-detection%20-%20OnPush.md)
-3. [Content Projection & View Children]()
+3. [Content Projection & View Children](./exercises/components%20&%20template/content-projection.md)
 4. [Template Driven Forms: NgModel](./exercises/forms%20-%20template-driven-forms_movie-search.md)
 5. [Template Driven Forms: MyMovies](./exercises/forms%20-%20template-driven-forms_my-movies.md)
 6. [Template Driven Forms: Validation](./exercises/forms%20-%20template-driven-forms_simple-validation.md)
