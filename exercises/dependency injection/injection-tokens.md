@@ -202,3 +202,11 @@ Great job, you have successfully implemented, provided and injected an Injection
 your application more configurable.
 
 Please test out if everything works as expected of course.
+
+
+## 4. BONUS: baseUrl as a token
+
+TBD!
+
+> [!NOTE]
+> This is a BONUS exercise, you don't have to complete it.

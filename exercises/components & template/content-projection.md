@@ -69,7 +69,22 @@ Let's hit two birds with one stone and fix both issues ;).
 ### 2.1 create a restricted outlet 
 
 The first thing we want to do is to enforce a certain element style that can get used as a movie-list headline.
-Please set the `<ng-content select=""`
+Please set the `select` input of the `ng-content` directive to `.movie-list-header`.
+
+<details>
+  <summary>MovieList restricted outlet</summary>
+
+```html
+<!-- movie-list.component.ts -->
+<div class="movie-list-title">
+  <ng-content select=".movie-list-header" />
+</div>
+
+```
+
+</details>
+
+`<ng-content select=".movie-list-header" />`
 
 TBD!
 

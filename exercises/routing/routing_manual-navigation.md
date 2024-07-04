@@ -138,7 +138,7 @@ router = inject(Router);
 
 </details>
 
-## 3.2 create a search callback
+### 3.2 create a search callback
 
 Create a new method `search(query: string)` that calls the `router.navigate(['/search', query])` method.
 
@@ -167,7 +167,7 @@ search(query: string) {
 
 </details>
 
-## 3.3 invoke callback
+### 3.3 invoke callback
 
 Now open the `app-shell.component.html` and locate the `ui-search-bar` component.
 Bind the search callback to the `(searchSubmit)` output and pass it's `$event` as argument.
