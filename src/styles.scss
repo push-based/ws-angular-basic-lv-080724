@@ -98,6 +98,23 @@ body.dark img:not([src*='.svg']) {
   align-items: center;
 }
 
+movie-list:has(.movie-list-title) {
+  margin-top: 95px;
+}
+.movie-list-title {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  height: 95px;
+  top: -95px;
+  left: 0;
+  right: 0;
+
+  .movie-list-header {
+
+  }
+}
+
 .favorite-indicator {
   border: unset;
   background: transparent;
