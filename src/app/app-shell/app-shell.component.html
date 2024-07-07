@@ -17,6 +17,18 @@
 
     <!-- Insert popular, top_rated & upcoming links here -->
 
+    @for (category of categories; track category.id) {
+      <a
+        [routerLinkActive]="'active'"
+        [routerLink]="['/list', category.id]"
+        class="navigation--link">
+        <div class="navigation--menu-item">
+          <fast-svg class="navigation--menu-item-icon" [name]="category.id" />
+          {{ category.label }}
+        </div>
+      </a>
+    }
+
     <!--
       <a
       class="navigation--link">
@@ -32,6 +44,18 @@
     <h3 class="navigation--headline">Genres</h3>
 
     <!-- Insert Genre links here -->
+
+    @for(genre of genres(); track genre.id) {
+      <a
+        class="navigation--link"
+        [routerLink]="['/genre', genre.id]"
+        routerLinkActive="active">
+        <div class="navigation--menu-item">
+          <fast-svg class="navigation--menu-item-icon" name="genre" />
+          {{ genre.name }}
+        </div>
+      </a>
+    }
 
   </nav>
   <div class="menu-footer">
@@ -56,15 +80,14 @@
     <ui-hamburger-button
       data-uf="menu-btn"
       class="ui-toolbar--action"
-      (click)="sideDrawerOpen = !sideDrawerOpen">
-    </ui-hamburger-button>
+      (click)="sideDrawerOpen = !sideDrawerOpen" />
     <div class="ui-toolbar--widget-container">
-      <ui-search-bar></ui-search-bar>
-      <ui-dark-mode-toggle></ui-dark-mode-toggle>
-      <fast-svg name="account" size="30"></fast-svg>
+      <ui-search-bar (searchSubmit)="search($event)"/>
+      <ui-dark-mode-toggle />
+      <fast-svg name="account" size="35" />
     </div>
   </div>
   <div class="content">
-    <ng-content></ng-content>
+    <ng-content />
   </div>
 </div>
