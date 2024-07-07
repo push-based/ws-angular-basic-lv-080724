@@ -35,7 +35,7 @@ npm run start
 ### Day 1
 
 1. [Angular CLI](./exercises/angular%20cli%20intro.md)
-2. [Template Interpolation](./exercises/components%20&%20template/template-interpolation)
+2. [Template Interpolation](./exercises/components%20&%20template/template-interpolation.md)
 3. [Template Attribute & Event Bindings](./exercises/components%20&%20template/attribute-and-event-bindings.md)
 4. [Control Flow: If](./exercises/components%20&%20template/control-flow-if.md)
 5. [Control Flow: For](./exercises/components%20&%20template/control-flow-for.md)

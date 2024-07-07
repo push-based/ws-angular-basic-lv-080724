@@ -5,7 +5,7 @@ first attribute and event bindings.
 
 ## 1. Use an attribute binding
 
-As it is best practice for attribute bindings to use a special syntax instead of pure template expressions, let's
+As it is best practice for attribute bindings to use a special syntax instead of pure template interpolation, let's
 replace the `src` expression with an actual attribute binding and introduce a binding for `alt`.
 
 Your task is to replace the `src` template expression of your `img.movie-image` with an attribute binding & introduce an `alt`

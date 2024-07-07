@@ -1,4 +1,4 @@
-# Exercise: angular movies intro & template expressions
+# Exercise: angular movies intro & template interpolation
 
 In this exercise, we want to get to know the codebase a bit and also create our first template expressions in the `AppComponent`.
 
@@ -84,7 +84,7 @@ After that, go to `app.component.ts` template and bind the `movie` objects prope
 > holds the end of the whole path: `{{ 'https://image.tmdb.org/t/p/w342' + movie.poster_path }}`
 
 <details>
-    <summary>template binding</summary>
+    <summary>template interpolation</summary>
 
 Apply template binding
 

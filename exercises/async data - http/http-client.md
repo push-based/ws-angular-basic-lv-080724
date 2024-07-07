@@ -65,7 +65,7 @@ We also need to configure headers in order to communicate with our API
 
 {
   headers: {
-    Authorization: `Bearer ${tmdbApiReadAccessKey}`
+    Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`
   }
 }
 ```
@@ -75,7 +75,7 @@ use the headers as options for network request
 ```ts
 this.httpClient.get(`${environment.tmbdBaseUrl}/3/movie/popular`, {
   headers: {
-    Authorization: `Bearer ${tmdbApiReadAccessKey}`
+    Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`
   }
 });
 ```
@@ -219,7 +219,7 @@ Great, now we are going to use it in combination with an `@if` to show a `div.lo
 
 </details>
 
-## 5. Throttle your network and test the spinner 
+## 5. Throttle your network / use a timeout and test the spinner 
 
 Let's now see if our loading spinner is actually doing what it should (display as long as there are no movies).
 
