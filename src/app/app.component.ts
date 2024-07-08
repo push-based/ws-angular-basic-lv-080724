@@ -19,7 +19,14 @@ import { AppShellComponent } from './app-shell/app-shell.component';
         </div>
         <button
           class="favorite-indicator"
-          (click)="toggleFavorite(movie)"></button>
+          [class.is-favorite]="isFavorite"
+          (click)="toggleFavorite(movie)">
+          @if (isFavorite) {
+            I like it
+          } @else {
+            Please like me
+          }
+        </button>
       </div>
     </app-shell>
   `,
@@ -32,7 +39,10 @@ export class AppComponent {
     poster_path: '/3bhkrj58Vtu7enYsRolD1fZdja1.jpg',
   };
 
+  isFavorite = false;
+
   toggleFavorite(movie) {
+    this.isFavorite = !this.isFavorite;
     console.log('toggled', movie);
   }
 }
