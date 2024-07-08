@@ -6,7 +6,7 @@ when maintaining an angular project.
 
 ## 0. Make sure you have correct `node` * `npm` version
 
-* `node ^18.13.0 || ^20.9.0`
+* `node ^18.19.1 || ^20.11.1 || ^22.0.0`
 * `npm > 8`
 
 e.g. 
