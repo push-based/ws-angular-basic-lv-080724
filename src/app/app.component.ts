@@ -8,6 +8,16 @@ import { AppShellComponent } from './app-shell/app-shell.component';
   imports: [AppShellComponent],
   template: `
     <app-shell>
+      <div class="favorite-widget">
+        @for (fav of favoriteMovies(); track fav) {
+          <span>{{ fav.title }}</span>
+
+          @if (!$last) {
+            <span>•</span>
+          }
+        }
+      </div>
+
       @for (movie of movies; track movie.id) {
         <div class="movie-card">
           <img
@@ -54,6 +64,10 @@ export class AppComponent {
       vote_average: 10,
     },
   ];
+
+  favoriteMovies = () => {
+    return this.movies.filter(movie => this.favoriteMovieIds.has(movie.id));
+  };
 
   favoriteMovieIds = new Set();
 
