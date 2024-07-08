@@ -1,12 +1,13 @@
 import { Component, computed, signal } from '@angular/core';
 
 import { AppShellComponent } from './app-shell/app-shell.component';
+import { MovieListComponent } from './movie/movie-list/movie-list.component';
 import { MovieModel } from './shared/model/movie.model';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [AppShellComponent],
+  imports: [AppShellComponent, MovieListComponent],
   template: `
     <app-shell>
       <div class="favorite-widget">
@@ -19,28 +20,10 @@ import { MovieModel } from './shared/model/movie.model';
         }
       </div>
 
-      @for (movie of movies(); track movie.id) {
-        <div class="movie-card">
-          <img
-            class="movie-image"
-            [alt]="movie.title"
-            [src]="'https://image.tmdb.org/t/p/w342' + movie.poster_path" />
-          <div class="movie-card-content">
-            <div class="movie-card-title">{{ movie.title }}</div>
-            <div class="movie-card-rating">{{ movie.vote_average }}</div>
-          </div>
-          <button
-            class="favorite-indicator"
-            [class.is-favorite]="favoriteMovieIds().has(movie.id)"
-            (click)="toggleFavorite(movie)">
-            @if (favoriteMovieIds().has(movie.id)) {
-              I like it
-            } @else {
-              Please like me
-            }
-          </button>
-        </div>
-      }
+      <movie-list
+        (favoriteToggled)="toggleFavorite($event)"
+        [favoriteMovieIds]="favoriteMovieIds()"
+        [movies]="movies()" />
     </app-shell>
   `,
 })
