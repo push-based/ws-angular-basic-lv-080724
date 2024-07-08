@@ -233,11 +233,11 @@ a condition with `@if` to display a separator.
 ```html
 
 <div class="favorite-widget">
-  @for (fav of favoriteMovies(); track fav; let last = $last) {
+  @for (fav of favoriteMovies(); track fav) {
   
     <span>{{ fav.title }}</span>
     
-    @if (!last) {
+    @if (!$last) {
       <span>•</span>
     }
   }
@@ -255,9 +255,9 @@ a condition with `@if` to display a separator.
 ```html
 <app-shell>
   <div class="favorite-widget">
-    @for (fav of favoriteMovies(); track fav; let last = $last) {
+    @for (fav of favoriteMovies(); track fav) {
       <span>{{ fav.title }}</span>
-      @if (!last) {
+      @if (!$last) {
         <span>•</span>
       }
     }
