@@ -1,3 +1,10 @@
+export interface MovieModel {
+  id: string;
+  title: string;
+  poster_path: string;
+  vote_average: number;
+}
+
 export interface TMDBMovieModel {
   poster_path: string;
   adult: boolean;

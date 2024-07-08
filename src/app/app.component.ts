@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { AppShellComponent } from './app-shell/app-shell.component';
+import { MovieModel } from './shared/model/movie.model';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,7 @@ import { AppShellComponent } from './app-shell/app-shell.component';
   template: `
     <app-shell>
       <div class="favorite-widget">
-        @for (fav of favoriteMovies(); track fav) {
+        @for (fav of favoriteMovies(); track fav.id) {
           <span>{{ fav.title }}</span>
 
           @if (!$last) {
@@ -44,7 +45,7 @@ import { AppShellComponent } from './app-shell/app-shell.component';
   `,
 })
 export class AppComponent {
-  movies = [
+  movies: MovieModel[] = [
     {
       id: 'the-god',
       title: 'The Godfather',
@@ -65,13 +66,13 @@ export class AppComponent {
     },
   ];
 
-  favoriteMovies = () => {
+  favoriteMovies = (): MovieModel[] => {
     return this.movies.filter(movie => this.favoriteMovieIds.has(movie.id));
   };
 
-  favoriteMovieIds = new Set();
+  favoriteMovieIds = new Set<string>();
 
-  toggleFavorite(movie) {
+  toggleFavorite(movie: MovieModel) {
     console.log('toggled', movie);
     if (this.favoriteMovieIds.has(movie.id)) {
       this.favoriteMovieIds.delete(movie.id);
