@@ -88,18 +88,19 @@ CTRL + P
 
 ext install esbenp.prettier-vscode
 
+ext install dbaeumer.vscode-eslint
+
 ```
 // .vscode/settings.json
 
 ```json
 
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "eslint.validate": ["javascript"]
+  "eslint.format.enable": true,
 }
 ```
 
