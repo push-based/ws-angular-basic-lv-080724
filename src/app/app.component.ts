@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 
 import { AppShellComponent } from './app-shell/app-shell.component';
 import { MovieModel } from './shared/model/movie.model';
@@ -11,7 +11,7 @@ import { MovieModel } from './shared/model/movie.model';
     <app-shell>
       <div class="favorite-widget">
         @for (fav of favoriteMovies(); track fav.id) {
-          <span>{{ fav.title }}</span>
+          <span (click)="toggleFavorite(fav)">{{ fav.title }}</span>
 
           @if (!$last) {
             <span>•</span>
@@ -19,7 +19,7 @@ import { MovieModel } from './shared/model/movie.model';
         }
       </div>
 
-      @for (movie of movies; track movie.id) {
+      @for (movie of movies(); track movie.id) {
         <div class="movie-card">
           <img
             class="movie-image"
@@ -31,9 +31,9 @@ import { MovieModel } from './shared/model/movie.model';
           </div>
           <button
             class="favorite-indicator"
-            [class.is-favorite]="favoriteMovieIds.has(movie.id)"
+            [class.is-favorite]="favoriteMovieIds().has(movie.id)"
             (click)="toggleFavorite(movie)">
-            @if (favoriteMovieIds.has(movie.id)) {
+            @if (favoriteMovieIds().has(movie.id)) {
               I like it
             } @else {
               Please like me
@@ -45,7 +45,7 @@ import { MovieModel } from './shared/model/movie.model';
   `,
 })
 export class AppComponent {
-  movies: MovieModel[] = [
+  movies = signal<MovieModel[]>([
     {
       id: 'the-god',
       title: 'The Godfather',
@@ -64,20 +64,25 @@ export class AppComponent {
       poster_path: '/lm3pQ2QoQ16pextRsmnUbG2onES.jpg',
       vote_average: 10,
     },
-  ];
+  ]);
 
-  favoriteMovies = (): MovieModel[] => {
-    return this.movies.filter(movie => this.favoriteMovieIds.has(movie.id));
-  };
+  favoriteMovieIds = signal(new Set<string>(['the-god-2']));
 
-  favoriteMovieIds = new Set<string>();
+  // depends on movies() & favoriteMovieIds()
+  favoriteMovies = computed<MovieModel[]>(() => {
+    console.log('computing new favoriteMovies', this.movies());
+    return this.movies().filter(movie => this.favoriteMovieIds().has(movie.id));
+  });
 
   toggleFavorite(movie: MovieModel) {
     console.log('toggled', movie);
-    if (this.favoriteMovieIds.has(movie.id)) {
-      this.favoriteMovieIds.delete(movie.id);
-    } else {
-      this.favoriteMovieIds.add(movie.id);
-    }
+    this.favoriteMovieIds.update(oldSet => {
+      if (oldSet.has(movie.id)) {
+        oldSet.delete(movie.id);
+      } else {
+        oldSet.add(movie.id);
+      }
+      return new Set<string>(oldSet);
+    });
   }
 }
