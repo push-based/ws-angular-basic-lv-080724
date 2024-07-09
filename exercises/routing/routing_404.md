@@ -1,4 +1,4 @@
-# Exercise: Router setup
+# Exercise: Router 404
 
 In this exercise you are going to deepen your knowledge about angulars router configuration. We are going to introduce
 a fallback mechanism that shows a meaningful message to the user in case they entered a non-existing route.
