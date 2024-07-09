@@ -113,18 +113,6 @@ export class MovieListPageComponent {
 
 ```
 
-```html
-<!-- movie-list-page.component.html -->
-
-<movie-list
-  [movies]="movieResponse.results"
-  *ngIf="(movies$ | async) as movieResponse; else: loading"></movie-list>
-<ng-template #loading>
-  <div class="loader"></div>
-</ng-template>
-
-```
-
 </details>
 
 ## 2. Create Routes & provide Router
