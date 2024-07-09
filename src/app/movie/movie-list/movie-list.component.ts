@@ -1,33 +1,18 @@
 import { Component, input, output } from '@angular/core';
 
 import { MovieModel } from '../../shared/model/movie.model';
+import { MovieCardComponent } from '../movie-card/movie-card.component';
 
 @Component({
   selector: 'movie-list',
   standalone: true,
-  imports: [],
+  imports: [MovieCardComponent],
   template: `
     @for (movie of movies(); track movie.id) {
-      <div class="movie-card">
-        <img
-          class="movie-image"
-          [alt]="movie.title"
-          [src]="'https://image.tmdb.org/t/p/w342' + movie.poster_path" />
-        <div class="movie-card-content">
-          <div class="movie-card-title">{{ movie.title }}</div>
-          <div class="movie-card-rating">{{ movie.vote_average }}</div>
-        </div>
-        <button
-          class="favorite-indicator"
-          [class.is-favorite]="favoriteMovieIds().has(movie.id)"
-          (click)="favoriteToggled.emit(movie)">
-          @if (favoriteMovieIds().has(movie.id)) {
-            I like it
-          } @else {
-            Please like me
-          }
-        </button>
-      </div>
+      <movie-card
+        [favorite]="favoriteMovieIds().has(movie.id)"
+        (favoriteChange)="favoriteToggled.emit(movie)"
+        [movie]="movie" />
     }
   `,
   styles: `
