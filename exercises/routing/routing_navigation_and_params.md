@@ -56,7 +56,7 @@ Use the following template as contents for each of the links:
 <a
   class="navigation--link">
   <div class="navigation--menu-item">
-    <svg-icon class="navigation--menu-item-icon" name="popular" />
+    <fast-svg class="navigation--menu-item-icon" name="popular" />
     Popular
   </div>
 </a>
@@ -87,7 +87,7 @@ Please implement the missing pieces (top_rated & upcoming links) on your own!
     [routerLink]="['/list', 'popular']"
     class="navigation--link">
     <div class="navigation--menu-item">
-      <svg-icon class="navigation--menu-item-icon" name="popular" />
+      <fast-svg class="navigation--menu-item-icon" name="popular" />
       Popular
     </div>
   </a>
@@ -180,7 +180,7 @@ Remember, this is an additional `Directive`, so we have to add it to the list of
     routerLinkActive="active"
   >
     <div class="navigation--menu-item">
-      <svg-icon class="navigation--menu-item-icon" name="popular"></svg-icon>
+      <fast-svg class="navigation--menu-item-icon" name="popular"/>
       Popular
     </div>
 </a>
