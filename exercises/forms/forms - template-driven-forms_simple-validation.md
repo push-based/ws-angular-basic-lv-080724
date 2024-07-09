@@ -10,7 +10,7 @@ to keep our persistence layer clean from bad user data.
 At the end of this exercise we want to have a proper validation of the entered data.
 On top of that we want to inform our users about the invalid state of their inputs.
 
-## Setup Validation
+## 1. Setup Validation
 
 We need to adjust our form setup made in `MyMovieListComponent`.
 
@@ -39,7 +39,7 @@ Start by adjusting the template to let the `ngModel` know which validators to us
 Serve the application and try to enter invalid data. The form should still pass the invalid values to the
 favorites array. 
 
-## Prevent save() method if invalid
+## 2. Prevent save() method if invalid
 
 Give your `form` element a name, e.g. `#favoriteForm` in order to be able to access it in your template.
 The native form has a method `checkValidity()` which returns if it's valid or not. We can use that directly
@@ -60,7 +60,7 @@ in the template to suppress the submit event to call `save()`.
 
 Well done! Serve the application and test if you are still able to store invalid data.
 
-## Display validation state
+## 3. Display validation state
 
 Now we want to give our users some kind of visual feedback about the validation state
 in our form.
@@ -147,7 +147,7 @@ input {
 
 </details>
 
-## Display error messages
+## 4. Display error messages
 
 Let's give our validation the final polish by introducing error messages connected to
 the form controls and their validation state.
@@ -193,10 +193,11 @@ determine the visibility of the error messages.
 <!-- my-movie-list.component.html -->
 
 <!-- add into input-group -->
-<span class="error"
-      *ngIf="titleCtrl.invalid && (titleCtrl.touched || titleCtrl.formDirective.submitted)">
-    Please enter valid data
-</span>
+@if (titleCtrl.invalid && (titleCtrl.touched || titleCtrl.formDirective.submitted)) {
+  <span class="error">
+      Please enter valid data
+  </span>
+}
 ```
 </details>
 
@@ -205,7 +206,7 @@ displayed error states.
 
 Congratulations, you've successfully implemented a fully validated form with angulars `template-driven forms`.
 
-## Bonus: Show error message based on error producer
+## 5. Bonus: Show error message based on error producer
 
 Now the task is to determine which validation failed and adjust the error message
 displayed accordingly.
@@ -220,11 +221,12 @@ the `required` one.
     <summary>Solution</summary>
 
 ```html
-  <!-- my-movie-list.component.html -->
-  
-  <span class="error" *ngIf="commentCtrl.invalid && (commentCtrl.touched || commentCtrl.formDirective.submitted)">
+<!-- my-movie-list.component.html -->
+@if (commentCtrl.invalid && (commentCtrl.touched || commentCtrl.formDirective.submitted)) {
+  <span class="error">
     {{ commentCtrl.hasError('minlength') ? 'Enter at least 5 characters' : 'Please enter at least something' }}
   </span>
+}
 ```
 </details>
 
