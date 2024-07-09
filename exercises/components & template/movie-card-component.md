@@ -18,10 +18,9 @@ OR
 ng g c movie/movie-card
 ```
 
-As our workspace is configured to generate single file components, you should now see 2 files being generated:
+As our workspace is configured to generate single file components, you should now see 1 files being generated:
 
 * `src/app/movie/movie-card/movie-card.component.ts` => component logic
-* `src/app/movie/movie-card/movie-card.component.spec` => test file
 
 
 If you want to have a separate file for the styles and/or the template, please use
@@ -39,7 +38,6 @@ It'll generate:
 * `src/app/movie/movie-card/movie-card.component.ts` => component logic
 * `src/app/movie/movie-card/movie-card.component.html` => template (--inline-template=false)
 * `src/app/movie/movie-card/movie-card.component.scss` => stylesheet (--inline-style=false)
-* `src/app/movie/movie-card/movie-card.component.spec` => test file
 
 </details>
 
