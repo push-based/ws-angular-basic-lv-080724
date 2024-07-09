@@ -96,9 +96,11 @@ Use the `titleCtrl.hasError` function to determine which error message to show.
   <summary>Adjust error feedback</summary>
 
 ```html
-<span class="error" *ngIf="title.invalid && (title.touched || ngForm.submitted)">
-  {{ title.hasError('uniqueFavorite') ? 'Favorite already exists' : 'Enter a title' }}
-</span>
+@if (title.invalid && (title.touched || ngForm.submitted)) {
+  <span class="error">
+    {{ title.hasError('uniqueFavorite') ? 'Favorite already exists' : 'Enter a title' }}
+  </span>
+}
 ```
 
 </details>

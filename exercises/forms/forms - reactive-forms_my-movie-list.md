@@ -9,7 +9,13 @@ At the end of this exercise we want to have the `MyMovieListComponent` using the
 the `template-driven forms`.
 On form submission we want to send the data to a mocked service to simulate a dedicated data storage.
 
-## Refactor to FormGroup
+## 0. Introduce type FavoriteMovie
+
+```ts
+type FavoriteMovie = { id: string; title: string; comment: string; }
+```
+
+## 1. Refactor to FormGroup
 
 Start with implementing a `FormGroup` with two `FormControls` for `title` and `comment`.
 Don't forget to also configure the right `Validators` for your `FormControl`s.
@@ -19,7 +25,8 @@ Don't forget to also configure the right `Validators` for your `FormControl`s.
 
 Also configure the fields to be `nonNullable`, as this will improve our typesafety!
 
-> **Tip:** make two separate class fields for each `FormControl`, thank me later :)
+> [!TIP]
+> make two separate class fields for each `FormControl`, thank me later :)
 > e.g. `title = new FormControl()`
 > `form = new FormGroup({ title: this.title })`
 
@@ -119,9 +126,11 @@ Have an input for the `title` control, use `formControl` directive:
 <div class="input-group">
   <label for="title">Title</label>
   <input id="title" [formControl]="title" name="title" type="text">
-  <span class="error" *ngIf="title.invalid && (title.touched || ngForm.submitted)">
-      Enter a title
+  @if (title.invalid && (title.touched || ngForm.submitted)) {
+    <span class="error">
+        Enter a title
     </span>
+  }
 </div>
 ```
 
@@ -139,9 +148,11 @@ Have a textarea for the `comment` control, use `formControl` directive:
   <label for="comment">Comment</label>
   <textarea rows="5" name="comment" id="comment"
             [formControl]="comment"></textarea>
-  <span class="error" *ngIf="comment.invalid && (comment.touched || ngForm.submitted)">
-      {{ commentCtrl.hasError('minlength') ? 'Write at least 5 characters' : 'Enter a comment' }}
-  </span>
+  @if (comment.invalid && (comment.touched || ngForm.submitted)) {
+    <span class="error">
+        {{ commentCtrl.hasError('minlength') ? 'Write at least 5 characters' : 'Enter a comment' }}
+    </span>
+  }
 </div>
 ```
 
@@ -158,17 +169,21 @@ Have a textarea for the `comment` control, use `formControl` directive:
   <div class="input-group">
     <label for="title">Title</label>
     <input id="title" [formControl]="title" name="title" type="text">
-    <span class="error" *ngIf="title.invalid && (title.touched || ngForm.submitted)">
-      Please enter valid data
-    </span>
+    @if (title.invalid && (title.touched || ngForm.submitted)) {
+      <span class="error">
+        Please enter valid data
+      </span> 
+    }
   </div>
   <div class="input-group">
     <label for="comment">Comment</label>
     <textarea rows="5" name="comment" id="comment"
               [formControl]="comment"></textarea>
-    <span class="error" *ngIf="comment.invalid && (comment.touched || ngForm.submitted)">
-      {{ commentCtrl.hasError('minlength') ? 'Enter at least 5 characters' : 'Please enter at least something' }}
-    </span>
+    @if (comment.invalid && (comment.touched || ngForm.submitted)) {
+      <span class="error">
+        {{ commentCtrl.hasError('minlength') ? 'Enter at least 5 characters' : 'Please enter at least something' }}
+      </span>
+    }
   </div>
   <div class="button-group">
     <button class="btn" type="reset">Reset</button>
@@ -185,7 +200,7 @@ You can serve the application now and test if your form still works as before un
 `http://localhost:4200/my-movies`.
 
 
-## Implement Service Methods
+## 2. Implement Service Methods
 
 Now it's time to do some stuff with the data we are now able to capture via our implemented form.
 Let's start with implementing the needed methods in the `MovieService`.
@@ -232,7 +247,7 @@ addFavorite(movie: FavoriteMovieModel) {
 ```
 </details>
 
-## Fetch Favorite Movies from Service
+## 3. Fetch Favorite Movies from Service
 
 Heading back to the `MyMovieListComponent` we can now use the `MovieService`s data in order to display a list of movies.
 
@@ -297,7 +312,7 @@ save(): void {
 Now create the template to display the list of favorite movies.
 
 Create a `div.favorites-list`. Keep it as a sibling of the `form` element.
-Inside, use an `*ngFor` to create a `div.favorite-item` by iterating over `favorites`.
+Inside, use an `@for` to create a `div.favorite-item` by iterating over `favorites`.
 
 <details>
     <summary>Template</summary>
@@ -313,10 +328,12 @@ Inside, use an `*ngFor` to create a `div.favorite-item` by iterating over `favor
 
 <h2>Favorite Movies</h2>
 <div class="favorites-list">
-  <div class="favorite-item" *ngFor="let movie of favorites">
-    <span class="favorite-item__title">{{ movie.title }}</span>
-    <span class="favorite-item__comment">{{ movie.comment }}</span>
-  </div>
+  @for (movie of favorites; track movie.id) {
+    <div class="favorite-item">
+      <span class="favorite-item__title">{{ movie.title }}</span>
+      <span class="favorite-item__comment">{{ movie.comment }}</span>
+    </div>
+  }
 </div>
 ```
 
@@ -326,7 +343,7 @@ Inside, use an `*ngFor` to create a `div.favorite-item` by iterating over `favor
 That's it, you have successfully created your first `ReactiveForm` with data persistence.
 Serve the application and test the functionality.
 
-## Bonus: Implement deletion
+## 4. Bonus: Implement deletion
 
 add a `delete` button to the template per `favorites` entry and find a way to delete a movie from the list again.
 You can use the `remove()` utility function from `@rx-angular/cdk/transformations` to handle the removal logic for you.
@@ -357,17 +374,21 @@ remove(favorites, { id: 'movie-to-delete' }, 'id');
   <div class="input-group">
     <label for="title">Title</label>
     <input id="title" [formControl]="title" name="title" type="text">
-    <span class="error" *ngIf="title.invalid && (title.touched || ngForm.submitted)">
-      Enter a title
-    </span>
+    @if (title.invalid && (title.touched || ngForm.submitted)) {
+      <span class="error">
+        Enter a title
+      </span>
+    }
   </div>
   <div class="input-group">
     <label for="comment">Comment</label>
     <textarea rows="5" name="comment" id="comment"
               [formControl]="comment"></textarea>
-    <span class="error" *ngIf="comment.invalid && (comment.touched || ngForm.submitted)">
-      {{ commentCtrl.hasError('minlength') ? 'Write at least 5 characters' : 'Enter a comment' }}
-    </span>
+    @if (comment.invalid && (comment.touched || ngForm.submitted)) {
+      <span class="error">
+        {{ commentCtrl.hasError('minlength') ? 'Write at least 5 characters' : 'Enter a comment' }}
+      </span>
+    }
   </div>
   <div class="button-group">
     <button class="btn" type="reset">Reset</button>
@@ -377,13 +398,15 @@ remove(favorites, { id: 'movie-to-delete' }, 'id');
 
 <h2>Favorite Movies</h2>
 <div class="favorites-list">
-  <div class="favorite-item" *ngFor="let movie of favorites">
-    <span class="favorite-item__title">{{ movie.title }}</span>
-    <span class="favorite-item__comment">{{ movie.comment }}</span>
-    <button class="btn btn__icon" (click)="removeFavorite(movie)">
-      <svg-icon name="delete"></svg-icon>
-    </button>
-  </div>
+  @for (movie of favorites; track movie.id) {
+    <div class="favorite-item">
+      <span class="favorite-item__title">{{ movie.title }}</span>
+      <span class="favorite-item__comment">{{ movie.comment }}</span>
+      <button class="btn btn__icon" (click)="removeFavorite(movie)">
+        <fast-svg name="delete" />
+      </button>
+    </div>
+  }
 </div>
 
 ```

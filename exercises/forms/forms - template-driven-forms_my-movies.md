@@ -8,16 +8,16 @@ At the end of this exercise we want to have a dedicated `MyMovieListComponent`
 providing a form to enter movie data.
 The form data will help us to maintain a user based list of favorite movies.
 
-## Setup MyMovieListComponent
+## 1. Setup MyMovieListComponent
 
-Create a new module standalone `MyMovieListComponent` component.
+Create a new `MyMovieListComponent` component.
 
 <details>
   <summary> Show Solution </summary>
 
 ```bash
 # create component
-ng g c movie/my-movie-list --standalone
+ng g c movie/my-movie-list
 ```
 
 </details>
@@ -29,7 +29,7 @@ We want to lazy load the `MyMovieListComponent` on the path `my-movies`.
   <summary> add router config </summary>
 
 ```ts
-// app-routing.module.ts
+// app.routes.ts
 {
     path: 'my-movies',
     loadComponent: () =>
@@ -46,7 +46,7 @@ Now we can implement the `MyMovieListComponent` itself and create a form using a
 If you access your application at [/my-movies](http://localhost:4200/my-movies) you should already
 see that the component shows up properly.
 
-## Implement MyMovieListComponent
+## 2. Implement MyMovieListComponent
 
 We want to have a component that saves favorite movies as `{title: string; comment: string}` from user input
 captured by a `form`.
@@ -161,6 +161,8 @@ input {
 ```
 
 </details>
+
+## 3. Use Template Driven Forms 
 
 Now let's implement the template and make use of angulars `template-driven forms`.
 

@@ -8,7 +8,7 @@ already stored movies as well instead of just listing them.
 
 At the end of this exercise we know how to build dynamic forms with the help of `FormArray`.
 
-## Typed FormGroup with TypeScript Magic 🧙
+## 1. Typed FormGroup with TypeScript Magic 🧙
 
 Let's start by implementing some utility types that make our life easier when working with forms.
 We will also clean up our code a little with this.
@@ -67,9 +67,9 @@ type MovieForm = TypedForm<FavoriteMovieModel>;
 
 </details>
 
-## Setup FormArray
+## 2. Setup FormArray
 
-Let's start by introducing refactoring our existing `favorites` property to a `favorites: FormArray` property which should serve as our viewModel to have dynamically
+Let's start by refactoring our existing `favorites` property to a `favorites: FormArray` property which should serve as our viewModel to have dynamically
 editable favorites.
 
 The initial value of the `FormArray` should be derived from `MovieService#getFavorites()` in order to initially display
@@ -128,7 +128,7 @@ This should serve already as a basis to keep track of each movies changes via us
 template and apply some changes to display an actual form.
 
 * Bind the `favoritesForm: FormGroup` to the `div.favorites-list` which than serves as form container for us
-* Create an `ng-container formArrayName="favorites"` as a wrapper around the `div.favorite-item *ngFor` construct
+* Create an `ng-container formArrayName="favorites"` as a wrapper around the `div.favorite-item @for` construct
 * iterate over `let favorite of favorites.controls; let i = index`
 * apply the `[formGroupName]="i"` do each `.favorite-item`
 * instead of reading `movie.title`, change the value binding so that you read the value from `favorite.controls.title.value`
@@ -147,20 +147,20 @@ template and apply some changes to display an actual form.
   <!-- FormArray binding -->
   <ng-container formArrayName="favorites">
     <!-- FormGroup binding -->
-    <div class="favorite-item"
-         [formGroupName]="i"
-         *ngFor="let favorite of favorites.controls; let i = index">
-      <span class="favorite-item__title">{{ favorite.controls.title.value }}</span>
-      <!-- FormControl binding -->
-      <div class="input-group">
-        <textarea formControlName="comment"></textarea>
+    @for (favorite of favorites.controls; track favorite.id) {
+      <div class="favorite-item"
+           [formGroupName]="$index">
+        <span class="favorite-item__title">{{ favorite.controls.title.value }}</span>
+        <!-- FormControl binding -->
+        <div class="input-group">
+          <textarea formControlName="comment"></textarea>
+        </div>
+        <button class="btn btn__icon"
+                (click)="removeFavorite({title: favorite.controls.title.value, comment: favorite.controls.comment.value})">
+          <svg-icon name="delete"></svg-icon>
+        </button>
       </div>
-      <button class="btn btn__icon"
-              (click)="removeFavorite({title: favorite.controls.title.value, comment: favorite.controls.comment.value})">
-        <svg-icon name="delete"></svg-icon>
-      </button>
-    </div>
-
+    }
   </ng-container>
 </div>
 ```
@@ -170,7 +170,7 @@ Run the application and see if the dynamic form is working with the current set 
 Since you cannot dynamically add new items to the FormArray, you need to refresh the page after saving a new entry.
 It will still be stored in the localStorage.
 
-## Dynamically add/remove Forms
+## 3. Dynamically add/remove Forms
 
 Now we want our users to be able to dynamically add new forms on the fly and directly visualize them as `FormGroup`
 inside the `FormArray`.
@@ -222,25 +222,25 @@ removeFavorite(i: number): void {
 
 In the template, add a `click` binding to the `button.btn btn__icon` and call the `removeFavorite` method.
 
-You get the index from the context of the `*ngFor` directive.
+You get the `$index` from the context of the `@for` control flow.
 
 <details>
     <summary>RemoveFavorite template binding</summary>
 
 ```html
 <!-- my-movie-list.component.html -->
-
-<div class="favorite-item"
-     [formGroupName]="i"
-     *ngFor="let favorite of favorites.controls; let i = index">
+@for (favorite of favorites.controls; track favorite.id) {
+  <div class="favorite-item"
+       [formGroupName]="i">
   
-  <!-- controls -->
+    <!-- controls -->
   
-  <button class="btn btn__icon"
-          (click)="removeFavorite(i)">
-    <svg-icon name="delete"></svg-icon>
-  </button>
-</div>
+    <button class="btn btn__icon"
+            (click)="removeFavorite(i)">
+      <svg-icon name="delete"></svg-icon>
+    </button>
+  </div>
+}
 ```
 
 </details>
@@ -250,7 +250,7 @@ Serve the application and try adding, removing & editing on the favorite list.
 You should be able to observe the values are getting added and removed from the `localStorage` by observing the
 values in your browsers dev tools.
 
-## Add Error States to FormArray controls
+## 4. Add Error States to FormArray controls
 
 The comment control in our dynamic `FormArray` is not showing any error messages right now if the input is invalid.
 
@@ -266,17 +266,18 @@ error messages based on the current error. We don't need to react to `touched` o
 
 <div class="input-group">
   <textarea formControlName="comment" ></textarea>
-  <span class="error"
-    *ngIf="favorite.controls.comment.invalid">
-      {{ favorite.controls.comment.hasError('minlength') ? 'Write at least 5 characters' : 'Enter a comment' }}
-  </span>
+  @if (favorite.controls.comment.invalid) {
+    <span class="error">
+        {{ favorite.controls.comment.hasError('minlength') ? 'Write at least 5 characters' : 'Enter a comment' }}
+    </span>
+  }
 </div>
 ```
 </details>
 
 Nice, serve the application and see if the error messages are properly displayed when editing or adding data.
 
-## Store FormArray updates
+## 5. Store FormArray updates
 
 We are able to store removals as well as creations in our store, but no updates yet.
 
