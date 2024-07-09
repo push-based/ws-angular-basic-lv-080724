@@ -448,7 +448,6 @@ import {
   input,
   output,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { MovieModel } from '../../shared/model/movie.model';
@@ -457,11 +456,10 @@ import { MovieCardComponent } from '../movie-card/movie-card.component';
 @Component({
   selector: 'movie-list',
   standalone: true,
-  imports: [MovieCardComponent, RouterLink, FastSvgComponent],
+  imports: [MovieCardComponent, FastSvgComponent],
   template: `
     @for (movie of movies(); track movie.id) {
       <movie-card
-        [routerLink]="['/movie', movie.id]"
         [movie]="movie"
         [favorite]="favoriteMovieIds().has(movie.id)"
         (favoriteChange)="toggleFavorite.emit(movie)" />
