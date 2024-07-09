@@ -244,8 +244,7 @@ We still just see a blank page when there is no result, let's also fix that!
 For this we want to adjust the code of `MovieListComponent` (`movie-list`).
 
 1. Open `src/app/movie/movie-list/movie-list.component.ts`.
-2. Introduce a new computed `empty`: `empty = compued(() => this.movies().length === 0)`
-3. Use @if (empty()) to show the following snippet
+2. Use `@empty` to show the following snippet
 
 ```html
 <div class="no-movies">
@@ -259,20 +258,15 @@ For this we want to adjust the code of `MovieListComponent` (`movie-list`).
 
 ```html
 <!-- movie-list.component.ts -->
+<!-- the iteration of items -->
+@for() {
 
-@if (empty()) {
+} @empty {
   <div class="no-movies">
     <fast-svg name="sad" size="50" />
     There are no movies to show
   </div>
 }
-```
-
-```ts
-// movie-list.component.ts 
-
-empty = computed(() => this.movies().length === 0);
-
 ```
 
 </details>
@@ -451,7 +445,6 @@ export const routes: Routes = [
 
 import {
   Component,
-  computed,
   input,
   output,
 } from '@angular/core';
@@ -466,18 +459,17 @@ import { MovieCardComponent } from '../movie-card/movie-card.component';
   standalone: true,
   imports: [MovieCardComponent, RouterLink, FastSvgComponent],
   template: `
-    @if (empty()) {
-      <div class="no-movies">
-        <fast-svg name="sad" size="50" />
-        There are no movies to show
-      </div>
-    }
     @for (movie of movies(); track movie.id) {
       <movie-card
         [routerLink]="['/movie', movie.id]"
         [movie]="movie"
         [favorite]="favoriteMovieIds().has(movie.id)"
         (favoriteChange)="toggleFavorite.emit(movie)" />
+    } @empty {
+      <div class="no-movies">
+        <fast-svg name="sad" size="50" />
+        There are no movies to show
+      </div>
     }
   `,
   styles: `
@@ -495,8 +487,6 @@ export class MovieListComponent {
   movies = input.required<MovieModel[]>();
   favoriteMovieIds = input(new Set<string>());
   toggleFavorite = output<MovieModel>();
-
-  empty = computed(() => this.movies().length === 0);
 }
 
 ```
