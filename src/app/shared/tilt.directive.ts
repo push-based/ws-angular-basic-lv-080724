@@ -3,20 +3,27 @@ import { Directive, ElementRef, input } from '@angular/core';
 @Directive({
   selector: '[tilt]',
   standalone: true,
+  host: {
+    '[style.transform]': 'rotation',
+    '(mouseleave)': 'reset()',
+    '(mouseenter)': 'rotate($event)',
+  },
 })
 export class TiltDirective {
   tiltDegree = input(5);
 
-  constructor(private elementRef: ElementRef<HTMLElement>) {
-    this.elementRef.nativeElement.addEventListener('mouseleave', () => {
-      this.elementRef.nativeElement.style.transform = `rotate(0deg)`;
-    });
+  rotation = 'rotate(0deg)';
 
-    this.elementRef.nativeElement.addEventListener('mouseenter', event => {
-      const pos = this.determineDirection(event.pageX);
-      this.elementRef.nativeElement.style.transform = `rotate(${pos === 0 ? `${this.tiltDegree()}deg` : `${-this.tiltDegree()}deg`})`;
-    });
+  rotate(event: MouseEvent) {
+    const pos = this.determineDirection(event.pageX);
+    this.rotation = `rotate(${pos === 0 ? `${this.tiltDegree()}deg` : `${-this.tiltDegree()}deg`})`;
   }
+
+  reset() {
+    this.rotation = 'rotate(0deg)';
+  }
+
+  constructor(private elementRef: ElementRef<HTMLElement>) {}
 
   /**
    *
