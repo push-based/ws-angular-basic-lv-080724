@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 
-import { MovieModel } from '../../shared/model/movie.model';
+import { TMDBMovieModel } from '../../shared/model/movie.model';
 import { MovieCardComponent } from '../movie-card/movie-card.component';
 
 @Component({
@@ -27,8 +27,8 @@ import { MovieCardComponent } from '../movie-card/movie-card.component';
   `,
 })
 export class MovieListComponent {
-  movies = input.required<MovieModel[]>();
+  movies = input.required<TMDBMovieModel[]>();
   favoriteMovieIds = input<Set<string>>(new Set<string>([]));
 
-  favoriteToggled = output<MovieModel>();
+  favoriteToggled = output<TMDBMovieModel>();
 }
