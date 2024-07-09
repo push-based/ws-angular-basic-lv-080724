@@ -450,7 +450,6 @@ export const routes: Routes = [
 ```ts
 
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -491,7 +490,6 @@ import { MovieCardComponent } from '../movie-card/movie-card.component';
       position: relative;
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MovieListComponent {
   movies = input.required<MovieModel[]>();
