@@ -1,13 +1,15 @@
+import { UpperCasePipe } from '@angular/common';
 import { Component, input, model } from '@angular/core';
 
 import { MovieModel } from '../../shared/model/movie.model';
 import { TiltDirective } from '../../shared/tilt.directive';
 import { StarRatingComponent } from '../../ui/pattern/star-rating/star-rating.component';
+import { MovieImagePipe } from '../movie-image.pipe';
 
 @Component({
   selector: 'movie-card',
   standalone: true,
-  imports: [StarRatingComponent, TiltDirective],
+  imports: [StarRatingComponent, TiltDirective, UpperCasePipe, MovieImagePipe],
   template: `
     <div class="movie-card">
       <img
@@ -15,9 +17,9 @@ import { StarRatingComponent } from '../../ui/pattern/star-rating/star-rating.co
         [tiltDegree]="5"
         class="movie-image"
         [alt]="movie().title"
-        [src]="'https://image.tmdb.org/t/p/w342' + movie().poster_path" />
+        [src]="movie().poster_path | movieImage: 780" />
       <div class="movie-card-content">
-        <div class="movie-card-title">{{ movie().title }}</div>
+        <div class="movie-card-title">{{ movie().title | uppercase }}</div>
         <div class="movie-card-rating">
           <ui-star-rating [rating]="movie().vote_average" />
         </div>
