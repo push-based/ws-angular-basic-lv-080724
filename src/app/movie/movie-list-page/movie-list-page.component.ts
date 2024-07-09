@@ -32,15 +32,15 @@ import { MovieListComponent } from '../movie-list/movie-list.component';
   styles: ``,
 })
 export class MovieListPageComponent {
-  movies = signal<TMDBMovieModel[]>([]);
+  movies = signal<TMDBMovieModel[] | null>(null);
 
-  loading = computed(() => this.movies().length === 0);
+  loading = computed(() => !this.movies());
 
   favoriteMovieIds = signal(new Set<string>());
 
   // depends on movies() & favoriteMovieIds()
   favoriteMovies = computed<TMDBMovieModel[]>(() =>
-    this.movies().filter(movie => this.favoriteMovieIds().has(movie.id))
+    (this.movies() ?? []).filter(movie => this.favoriteMovieIds().has(movie.id))
   );
 
   private movieService = inject(MovieService);
@@ -51,13 +51,21 @@ export class MovieListPageComponent {
     this.activatedRoute.params.subscribe(params => {
       // we got a new parameter here, we will start fetching new movies
 
-      this.movies.set([]);
+      this.movies.set(null);
 
-      this.movieService.getMovies(params.category).subscribe(response => {
-        setTimeout(() => {
-          this.movies.set(response.results);
-        }, 1500);
-      });
+      if (params.term) {
+        this.movieService.searchMovies(params.term).subscribe(response => {
+          setTimeout(() => {
+            this.movies.set(response.results);
+          }, 1500);
+        });
+      } else {
+        this.movieService.getMovies(params.category).subscribe(response => {
+          setTimeout(() => {
+            this.movies.set(response.results);
+          }, 1500);
+        });
+      }
     });
   }
 

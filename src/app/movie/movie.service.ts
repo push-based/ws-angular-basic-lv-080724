@@ -23,6 +23,18 @@ export class MovieService {
     );
   }
 
+  searchMovies(query: string): Observable<{ results: TMDBMovieModel[] }> {
+    return this.httpClient.get<{ results: TMDBMovieModel[] }>(
+      `${environment.tmdbBaseUrl}/3/search/movie`,
+      {
+        headers: {
+          Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
+        },
+        params: { query },
+      }
+    );
+  }
+
   getGenres(): Observable<{ genres: TMDBMovieGenreModel[] }> {
     return this.httpClient.get<{ genres: TMDBMovieGenreModel[] }>(
       `${environment.tmdbBaseUrl}/3/genre/movie/list`,

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { DarkModeToggleComponent } from '../ui/component/dark-mode-toggle/dark-mode-toggle.component';
@@ -24,4 +24,10 @@ import { SideDrawerComponent } from '../ui/component/side-drawer/side-drawer.com
 })
 export class AppShellComponent {
   sideDrawerOpen = false;
+
+  private router = inject(Router);
+
+  search(term: string) {
+    this.router.navigate(['/search', term]);
+  }
 }

@@ -14,6 +14,10 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'search/:term',
+    component: MovieListPageComponent,
+  },
+  {
     path: '**',
     component: NotFoundPageComponent,
   },
