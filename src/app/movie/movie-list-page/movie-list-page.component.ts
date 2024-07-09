@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { TMDBMovieModel } from '../../shared/model/movie.model';
 import { MovieService } from '../movie.service';
@@ -44,11 +45,19 @@ export class MovieListPageComponent {
 
   private movieService = inject(MovieService);
 
+  private activatedRoute = inject(ActivatedRoute);
+
   constructor() {
-    this.movieService.getMovies('top_rated').subscribe(response => {
-      setTimeout(() => {
-        this.movies.set(response.results);
-      }, 1500);
+    this.activatedRoute.params.subscribe(params => {
+      // we got a new parameter here, we will start fetching new movies
+
+      this.movies.set([]);
+
+      this.movieService.getMovies(params.category).subscribe(response => {
+        setTimeout(() => {
+          this.movies.set(response.results);
+        }, 1500);
+      });
     });
   }
 

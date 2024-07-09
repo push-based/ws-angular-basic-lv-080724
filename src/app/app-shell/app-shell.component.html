@@ -17,6 +17,36 @@
 
     <!-- Insert popular, top_rated & upcoming links here -->
 
+    <a
+      [routerLink]="['/list', 'popular']"
+      [routerLinkActive]="'active'"
+      class="navigation--link">
+      <div class="navigation--menu-item">
+        <fast-svg class="navigation--menu-item-icon" name="popular" />
+        Popular
+      </div>
+    </a>
+
+    <a
+      [routerLink]="['/list', 'top_rated']"
+      [routerLinkActive]="'active'"
+      class="navigation--link">
+      <div class="navigation--menu-item">
+        <fast-svg class="navigation--menu-item-icon" name="top_rated" />
+        Top Rated
+      </div>
+    </a>
+
+    <a
+      [routerLink]="['/list', 'upcoming']"
+      [routerLinkActive]="'active'"
+      class="navigation--link">
+      <div class="navigation--menu-item">
+        <fast-svg class="navigation--menu-item-icon" name="upcoming" />
+        Upcoming
+      </div>
+    </a>
+
     <!--
       <a
       class="navigation--link">
