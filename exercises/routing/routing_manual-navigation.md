@@ -200,7 +200,7 @@ In the `MovieListPageComponent`, adjust the typing of the `movies: Signal<TMDBMo
 Also initialize & reset its value with a `null` value.
 
 Then adjust also:
-* `loading` computed => `!!this.movies()`
+* `loading` computed => `!this.movies()`
 * `favoriteMovies` computed => needs to be aware of movies can return null now
 
 
