@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 
-import { environment } from '../environments/environment';
 import { AppShellComponent } from './app-shell/app-shell.component';
+import { MovieService } from './movie/movie.service';
 import { MovieListComponent } from './movie/movie-list/movie-list.component';
 import { TMDBMovieModel } from './shared/model/movie.model';
 
@@ -38,7 +37,7 @@ export class AppComponent {
 
   loading = computed(() => this.movies().length === 0);
 
-  favoriteMovieIds = signal(new Set<string>(['the-god-2']));
+  favoriteMovieIds = signal(new Set<string>());
 
   // depends on movies() & favoriteMovieIds()
   favoriteMovies = computed<TMDBMovieModel[]>(() => {
@@ -46,20 +45,14 @@ export class AppComponent {
     return this.movies().filter(movie => this.favoriteMovieIds().has(movie.id));
   });
 
-  constructor(private httpClient: HttpClient) {
-    this.httpClient
-      .get<{
-        results: TMDBMovieModel[];
-      }>(`${environment.tmdbBaseUrl}/3/movie/popular`, {
-        headers: {
-          Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
-        },
-      })
-      .subscribe(response => {
-        setTimeout(() => {
-          this.movies.set(response.results);
-        }, 1500);
-      });
+  private movieService = inject(MovieService);
+
+  constructor() {
+    this.movieService.getMovies('top_rated').subscribe(response => {
+      setTimeout(() => {
+        this.movies.set(response.results);
+      }, 1500);
+    });
   }
 
   toggleFavorite(movie: TMDBMovieModel) {
