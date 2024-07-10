@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { insert, remove } from '@rx-angular/cdk/transformations';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { TMDBMovieModel } from '../shared/model/movie.model';
+import { FavoriteMovie, TMDBMovieModel } from '../shared/model/movie.model';
 import { TMDBMovieGenreModel } from '../shared/model/movie-genre.model';
 
 @Injectable({
@@ -42,5 +43,19 @@ export class MovieService {
         },
       }
     );
+  }
+
+  getFavorites(): FavoriteMovie[] {
+    return JSON.parse(localStorage.getItem('my-movies')) || [];
+  }
+
+  removeFavorite(movie: FavoriteMovie) {
+    const favorites = remove(this.getFavorites(), movie, 'id');
+    localStorage.setItem('my-movies', JSON.stringify(favorites));
+  }
+
+  addFavorite(movie: FavoriteMovie) {
+    const favorites = insert(this.getFavorites(), movie);
+    localStorage.setItem('my-movies', JSON.stringify(favorites));
   }
 }

@@ -1,51 +1,48 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { FastSvgComponent } from '@push-based/ngx-fast-svg';
+
+import { FavoriteMovie } from '../../shared/model/movie.model';
+import { MovieService } from '../movie.service';
 
 @Component({
   selector: 'my-movie-list',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ReactiveFormsModule, FastSvgComponent],
   template: `
     <form
-      #formEl
-      (submit)="
-        formEl.checkValidity() && save();
-        formEl.checkValidity() && formEl.reset()
-      ">
+      [formGroup]="form"
+      #formEl="ngForm"
+      (ngSubmit)="save() && formEl.resetForm()">
       <div class="input-group">
         <label for="title">Title</label>
         <input
-          required
-          #titleCtrl="ngModel"
-          [class.error]="titleCtrl.invalid"
+          [formControl]="title"
+          [class.error]="title.invalid"
           id="title"
           name="title"
-          type="text"
-          [(ngModel)]="title" />
-        @if (
-          titleCtrl.invalid &&
-          (titleCtrl.touched || titleCtrl.formDirective.submitted)
-        ) {
+          type="text" />
+        @if (title.invalid && (title.touched || formEl.submitted)) {
           <span class="error"> Please enter valid data </span>
         }
       </div>
       <div class="input-group">
         <label for="comment">Comment</label>
         <textarea
-          #commentCtrl="ngModel"
-          required
-          minlength="5"
+          [formControl]="comment"
           rows="5"
           name="comment"
-          id="comment"
-          [(ngModel)]="comment"></textarea>
-        @if (
-          commentCtrl.invalid &&
-          (commentCtrl.touched || commentCtrl.formDirective.submitted)
-        ) {
+          id="comment"></textarea>
+        @if (comment.invalid && (comment.touched || formEl.submitted)) {
           <span class="error">
             {{
-              commentCtrl.hasError('minlength')
+              comment.hasError('minlength')
                 ? 'Enter at least 5 characters'
                 : 'Please enter at least something'
             }}
@@ -57,6 +54,19 @@ import { FormsModule } from '@angular/forms';
         <button class="btn primary-button" type="submit">Save</button>
       </div>
     </form>
+
+    <h2>Favorite Movies</h2>
+    <div class="favorites-list">
+      @for (favorite of favorites; track favorite.id) {
+        <div class="favorite-item">
+          <span class="favorite-item__title">{{ favorite.title }}</span>
+          <span class="favorite-item__comment">{{ favorite.comment }}</span>
+          <button class="btn btn__icon" (click)="removeFavorite(favorite)">
+            <fast-svg name="delete" />
+          </button>
+        </div>
+      }
+    </div>
   `,
   styles: `
     :host {
@@ -110,25 +120,62 @@ import { FormsModule } from '@angular/forms';
         border-color: var(--palette-primary-main);
       }
     }
+    .favorite-item {
+      padding: 1rem 0.5rem;
+      display: flex;
+      font-size: var(--text-lg);
+      align-items: center;
+
+      textarea.ng-invalid {
+        border-color: darkred;
+        background-color: rgba(139, 0, 0, 0.33);
+      }
+
+      .btn {
+        overflow: hidden;
+      }
+
+      &__title {
+        width: 125px;
+      }
+    }
   `,
 })
 export class MyMovieListComponent {
-  private favorites: { title: string; comment: string }[] = [];
+  movieService = inject(MovieService);
 
-  title = '';
-  comment = '';
+  favorites: FavoriteMovie[] = this.movieService.getFavorites();
 
-  save() {
-    this.favorites.push({
-      title: this.title,
-      comment: this.comment,
-    });
-    console.log(this.favorites, 'favorites');
-    this.reset();
+  title = new FormControl('', Validators.required);
+  comment = new FormControl('', [Validators.required, Validators.minLength(5)]);
+
+  form = new FormGroup({
+    title: this.title,
+    comment: this.comment,
+  });
+
+  save(): boolean {
+    if (this.form.valid) {
+      this.movieService.addFavorite({
+        id: this.title.value,
+        title: this.title.value,
+        comment: this.comment.value,
+      });
+      this.favorites = this.movieService.getFavorites();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  removeFavorite(favorite: FavoriteMovie) {
+    this.movieService.removeFavorite(favorite);
+    this.favorites = this.movieService.getFavorites();
   }
 
   reset() {
-    this.title = '';
-    this.comment = '';
+    this.title.setValue('');
+    this.comment.setValue('');
   }
 }
