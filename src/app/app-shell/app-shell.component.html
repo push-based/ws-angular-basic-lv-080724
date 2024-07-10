@@ -17,6 +17,36 @@
 
     <!-- Insert popular, top_rated & upcoming links here -->
 
+    <a
+      [routerLink]="['/list', 'popular']"
+      [routerLinkActive]="'active'"
+      class="navigation--link">
+      <div class="navigation--menu-item">
+        <fast-svg class="navigation--menu-item-icon" name="popular" />
+        Popular
+      </div>
+    </a>
+
+    <a
+      [routerLink]="['/list', 'top_rated']"
+      [routerLinkActive]="'active'"
+      class="navigation--link">
+      <div class="navigation--menu-item">
+        <fast-svg class="navigation--menu-item-icon" name="top_rated" />
+        Top Rated
+      </div>
+    </a>
+
+    <a
+      [routerLink]="['/list', 'upcoming']"
+      [routerLinkActive]="'active'"
+      class="navigation--link">
+      <div class="navigation--menu-item">
+        <fast-svg class="navigation--menu-item-icon" name="upcoming" />
+        Upcoming
+      </div>
+    </a>
+
     <!--
       <a
       class="navigation--link">
@@ -32,6 +62,18 @@
     <h3 class="navigation--headline">Genres</h3>
 
     <!-- Insert Genre links here -->
+
+    @for (genre of genres(); track genre.id) {
+      <a
+        [routerLink]="['/genre', genre.id]"
+        [routerLinkActive]="'active'"
+        class="navigation--link">
+        <div class="navigation--menu-item">
+          <fast-svg class="navigation--menu-item-icon" name="genre" />
+          {{ genre.name }}
+        </div>
+      </a>
+    }
 
   </nav>
   <div class="menu-footer">
@@ -59,9 +101,9 @@
       (click)="sideDrawerOpen = !sideDrawerOpen">
     </ui-hamburger-button>
     <div class="ui-toolbar--widget-container">
-      <ui-search-bar></ui-search-bar>
+      <ui-search-bar [(ngModel)]="searchValue"></ui-search-bar>
       <ui-dark-mode-toggle></ui-dark-mode-toggle>
-      <fast-svg name="account" size="30"></fast-svg>
+      <fast-svg [routerLink]="['/my-movies']" name="account" size="30"></fast-svg>
     </div>
   </div>
   <div class="content">

@@ -1,3 +1,14 @@
+export interface MovieModel {
+  id: string;
+  title: string;
+  poster_path: string;
+  vote_average: number;
+}
+
+export type FavoriteMovie = Pick<TMDBMovieModel, 'id' | 'title'> & {
+  comment: string;
+};
+
 export interface TMDBMovieModel {
   poster_path: string;
   adult: boolean;
