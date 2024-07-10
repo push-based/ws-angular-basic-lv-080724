@@ -46,7 +46,11 @@ export class MovieService {
   }
 
   getFavorites(): FavoriteMovie[] {
-    return JSON.parse(localStorage.getItem('my-movies')) || [];
+    return (
+      (JSON.parse(
+        localStorage.getItem('my-movies') as string
+      ) as FavoriteMovie[]) || []
+    );
   }
 
   removeFavorite(movie: FavoriteMovie) {

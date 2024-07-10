@@ -146,8 +146,14 @@ export class MyMovieListComponent {
 
   favorites: FavoriteMovie[] = this.movieService.getFavorites();
 
-  title = new FormControl('', Validators.required);
-  comment = new FormControl('', [Validators.required, Validators.minLength(5)]);
+  title = new FormControl('', {
+    validators: Validators.required,
+    nonNullable: true,
+  });
+  comment = new FormControl('', {
+    validators: [Validators.required, Validators.minLength(5)],
+    nonNullable: true,
+  });
 
   form = new FormGroup({
     title: this.title,
@@ -172,10 +178,5 @@ export class MyMovieListComponent {
   removeFavorite(favorite: FavoriteMovie) {
     this.movieService.removeFavorite(favorite);
     this.favorites = this.movieService.getFavorites();
-  }
-
-  reset() {
-    this.title.setValue('');
-    this.comment.setValue('');
   }
 }
