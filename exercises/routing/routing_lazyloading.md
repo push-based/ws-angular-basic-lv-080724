@@ -112,7 +112,7 @@ It should be very similar to what we did for the categories.
 ```ts
 
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { MovieService } from '../movie/movie.service';
@@ -138,16 +138,21 @@ import { SideDrawerComponent } from '../ui/component/side-drawer/side-drawer.com
   ],
 })
 export class AppShellComponent {
-  private movieService = inject(MovieService);
-
   sideDrawerOpen = false;
+
+  private router = inject(Router);
+  private movieService = inject(MovieService);
 
   genres = signal<TMDBMovieGenreModel[]>([]);
 
   constructor() {
-    this.movieService
-      .getGenres()
-      .subscribe(({ genres }) => this.genres.set(genres));
+    this.movieService.getGenres().subscribe(result => {
+      this.genres.set(result.genres);
+    });
+  }
+
+  search(term: string) {
+    this.router.navigate(['/search', term]);
   }
 }
 
@@ -249,7 +254,7 @@ export class AppShellComponent {
       (click)="sideDrawerOpen = !sideDrawerOpen">
     </ui-hamburger-button>
     <div class="ui-toolbar--widget-container">
-      <ui-search-bar></ui-search-bar>
+      <ui-search-bar (searchSubmit)="search($event)"></ui-search-bar>
       <ui-dark-mode-toggle></ui-dark-mode-toggle>
       <fast-svg name="account" size="35"></fast-svg>
     </div>
@@ -372,6 +377,10 @@ export const routes: Routes = [
     path: 'list/:category',
     component: MovieListPageComponent,
     canMatch: [isCategoryGuard],
+  },
+  {
+    path: 'search/:query',
+    component: MovieListPageComponent,
   },
   {
     path: 'genre/:genreId',
