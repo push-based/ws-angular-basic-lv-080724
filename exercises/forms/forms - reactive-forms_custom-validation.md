@@ -8,7 +8,7 @@ movie twice.
 At the end of this exercise we want to have a custom validator that checks if a user entered a movie that
 already is stored as a favorite.
 
-## Create custom validator
+## 1. Create custom validator
 
 Create a new file `unique-favorite.validator.ts`. It should export a factory function that returns a `ValidatorFn`.
 
@@ -87,7 +87,7 @@ title = new FormControl('', {
 
 Amazing, the validator should already work. You can serve the application and try it out!
 
-## Adjust error feedback
+## 2. Adjust error feedback
 
 Just as we did for the `commentCtrl`, we want to show different error messages for different error producers.
 Use the `titleCtrl.hasError` function to determine which error message to show.

@@ -9,11 +9,64 @@ At the end of this exercise we want to have the `MyMovieListComponent` using the
 the `template-driven forms`.
 On form submission we want to send the data to a mocked service to simulate a dedicated data storage.
 
-## 0. Introduce type FavoriteMovie
+## 0. Prepare Service & Model
+
+### 0.1 type FavoriteMovie
+
+If not already done:
+
+Add the following type definition to the `movie.model.ts` file:
 
 ```ts
-type FavoriteMovie = { id: string; title: string; comment: string; }
+// src/app/shared/model/movie.model.ts
+
+export type FavoriteMovie = Pick<TMDBMovieModel, 'title' | 'id'> & {
+  comment: string;
+};
 ```
+
+### 0.2 implement Service Methods
+
+It's time to do some stuff with the data we are now able to capture via our implemented form.
+Let's start with implementing the needed methods in the `MovieService`.
+
+Since we don't have an actual endpoint, we will use the `localStorage` in order to have at least
+some layer of persistence.
+
+Your task is to implement the methods following methods in `MovieService`:
+
+* `getFavorites(): FavoriteMovieModel[]`
+* `addFavorite(movie: FavoriteMovieModel)`
+
+The `getFavorites()` method should simply return a `JSON.parsed` value from `localStorage.getItem('my-movies')` or an empty
+array in case of no value exists.
+
+The `addFavorite` method should take care of adding the given `Movie` and store the
+updated array via `localStorage.setItem('my-movies')`.
+
+For the sake of simplicity, please use the helper function `insert` from `@rx-angular/cdk/transformations`.
+For comparison, for now we relate on the `title` property.
+
+```ts
+insert(this.getFavorites(), movie)
+```
+
+<details>
+    <summary>MovieService</summary>
+
+```ts
+// movie.service.ts
+
+getFavorites(): FavoriteMovieModel[] {
+    return JSON.parse(localStorage.getItem('my-movies')) || [];
+}
+
+addFavorite(movie: FavoriteMovieModel) {
+    const favorites = insert(this.getFavorites(), movie);
+    localStorage.setItem('my-movies', JSON.stringify(favorites));
+}
+```
+</details>
 
 ## 1. Refactor to FormGroup
 
@@ -199,55 +252,7 @@ Have a textarea for the `comment` control, use `formControl` directive:
 You can serve the application now and test if your form still works as before under the following route:
 `http://localhost:4200/my-movies`.
 
-
-## 2. Implement Service Methods
-
-Now it's time to do some stuff with the data we are now able to capture via our implemented form.
-Let's start with implementing the needed methods in the `MovieService`.
-
-Since we don't have an actual endpoint, we will use the `localStorage` in order to have at least
-some layer of persistence.
-
-Before we begin, please note we need to adjust `MovieModel` in some way in order to store the `comment` property.
-You can decide on your own how to handle it, the solution proposes the most simple approach by adding the needed 
-properties on the fly.
-
-Your task is to implement the methods following methods in `MovieService`:
-
-* `getFavorites(): FavoriteMovieModel[]` 
-* `addFavorite(movie: FavoriteMovieModel)`
-
-The `getFavorites()` method should simply return a `JSON.parsed` value from `localStorage.getItem('my-movies')` or an empty
-array in case of no value exists.
-
-The `addFavorite` method should take care of adding the given `Movie` and store the
-updated array via `localStorage.setItem('my-movies')`.
-
-For the sake of simplicity, please use the helper function `insert` from `@rx-angular/cdk/transformations`.
-For comparison, for now we relate on the `title` property.
-
-```ts
-insert(this.getFavorites(), movie)
-```
-
-<details>
-    <summary>MovieService</summary>
-    
-```ts
-// movie.service.ts
-
-getFavorites(): FavoriteMovieModel[] {
-    return JSON.parse(localStorage.getItem('my-movies')) || [];
-}
-
-addFavorite(movie: FavoriteMovieModel) {
-    const favorites = insert(this.getFavorites(), movie);
-    localStorage.setItem('my-movies', JSON.stringify(favorites));
-}
-```
-</details>
-
-## 3. Fetch Favorite Movies from Service
+## 2. Fetch Favorite Movies from Service
 
 Heading back to the `MyMovieListComponent` we can now use the `MovieService`s data in order to display a list of movies.
 
@@ -343,7 +348,7 @@ Inside, use an `@for` to create a `div.favorite-item` by iterating over `favorit
 That's it, you have successfully created your first `ReactiveForm` with data persistence.
 Serve the application and test the functionality.
 
-## 4. Bonus: Implement deletion
+## 3. Bonus: Implement deletion
 
 add a `delete` button to the template per `favorites` entry and find a way to delete a movie from the list again.
 You can use the `remove()` utility function from `@rx-angular/cdk/transformations` to handle the removal logic for you.
