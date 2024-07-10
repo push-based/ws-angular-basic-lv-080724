@@ -213,7 +213,11 @@ Before removing the `FormGroup` from the `FormArray`, we also want to store the 
 // my-movie-list.component.ts
 
 removeFavorite(i: number): void {
-  this.movieService.removeFavorite(this.favorites.controls.at(i).getRawValue());
+  const favoriteToRemove = this.favorites.controls.at(index).getRawValue();
+  this.movieService.removeFavorite({
+    ...favoriteToRemove,
+    id: favoriteToRemove.title,
+  });
   this.favorites.removeAt(i);
 }
 ```
