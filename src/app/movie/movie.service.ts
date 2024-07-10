@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { insert, remove } from '@rx-angular/cdk/transformations';
+import { insert, remove, update } from '@rx-angular/cdk/transformations';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
@@ -60,6 +60,11 @@ export class MovieService {
 
   addFavorite(movie: FavoriteMovie) {
     const favorites = insert(this.getFavorites(), movie);
+    localStorage.setItem('my-movies', JSON.stringify(favorites));
+  }
+
+  updateFavorite(movie: FavoriteMovie) {
+    const favorites = update(this.getFavorites(), movie, 'id');
     localStorage.setItem('my-movies', JSON.stringify(favorites));
   }
 }

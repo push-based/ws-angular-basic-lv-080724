@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import {
   AbstractControl,
+  FormArray,
   FormControl,
   FormGroup,
   FormsModule,
@@ -29,6 +30,17 @@ const uniqueValidator = (): ValidatorFn => {
     };
   };
 };
+
+type TypedForm<T, K extends keyof T = keyof T> = FormGroup<{
+  [key in K]: FormControl<T[key]>;
+}>;
+
+type FavoriteMovieForm = TypedForm<FavoriteMovie, 'title' | 'comment'>;
+
+// FormGroup<{
+//  title: FormControl<string>
+//  comment: FormControl<string>
+// }>
 
 @Component({
   selector: 'my-movie-list',
@@ -79,16 +91,28 @@ const uniqueValidator = (): ValidatorFn => {
     </form>
 
     <h2>Favorite Movies</h2>
-    <div class="favorites-list">
-      @for (favorite of favorites; track favorite.id) {
-        <div class="favorite-item">
-          <span class="favorite-item__title">{{ favorite.title }}</span>
-          <span class="favorite-item__comment">{{ favorite.comment }}</span>
-          <button class="btn btn__icon" (click)="removeFavorite(favorite)">
-            <fast-svg name="delete" />
-          </button>
-        </div>
-      }
+    <div class="favorites-list" [formGroup]="favoriteForm">
+      <ng-container formArrayName="favorites">
+        @for (favorite of favorites.controls; track favorite) {
+          <div class="favorite-item" [formGroupName]="$index">
+            <span class="favorite-item__title">{{
+              favorite.controls.title.value
+            }}</span>
+            <div class="input-group">
+              <label for="comment">Comment</label>
+              <textarea
+                [formControl]="favorite.controls.comment"
+                (input)="onChange($index)"
+                rows="5"
+                name="comment"
+                id="comment"></textarea>
+            </div>
+            <button class="btn btn__icon" (click)="removeFavorite($index)">
+              <fast-svg name="delete" />
+            </button>
+          </div>
+        }
+      </ng-container>
     </div>
   `,
   styles: `
@@ -167,7 +191,15 @@ const uniqueValidator = (): ValidatorFn => {
 export class MyMovieListComponent {
   movieService = inject(MovieService);
 
-  favorites: FavoriteMovie[] = this.movieService.getFavorites();
+  favorites: FormArray<FavoriteMovieForm> = new FormArray(
+    this.movieService.getFavorites().map(favorite => {
+      return this.createFavoriteGroup(favorite);
+    })
+  );
+
+  favoriteForm = new FormGroup({
+    favorites: this.favorites,
+  });
 
   title = new FormControl('', {
     validators: [Validators.required, uniqueValidator()],
@@ -190,7 +222,13 @@ export class MyMovieListComponent {
         title: this.title.value,
         comment: this.comment.value,
       });
-      this.favorites = this.movieService.getFavorites();
+      this.favorites.push(
+        this.createFavoriteGroup({
+          id: this.title.value,
+          title: this.title.value,
+          comment: this.comment.value,
+        })
+      );
 
       return true;
     }
@@ -198,8 +236,33 @@ export class MyMovieListComponent {
     return false;
   }
 
-  removeFavorite(favorite: FavoriteMovie) {
-    this.movieService.removeFavorite(favorite);
-    this.favorites = this.movieService.getFavorites();
+  onChange(i: number) {
+    const group = this.favorites.at(i);
+    if (group.valid) {
+      const favorite = group.getRawValue();
+      this.movieService.updateFavorite({
+        ...favorite,
+        id: favorite.title,
+      });
+    }
+  }
+
+  removeFavorite(index: number) {
+    const favoriteToRemove = this.favorites.controls.at(index).getRawValue();
+    this.movieService.removeFavorite({
+      ...favoriteToRemove,
+      id: favoriteToRemove.title,
+    });
+    this.favorites.removeAt(index);
+  }
+
+  createFavoriteGroup(favorite: FavoriteMovie): FavoriteMovieForm {
+    return new FormGroup({
+      title: new FormControl<string>(favorite.title),
+      comment: new FormControl<string>(favorite.comment, [
+        Validators.required,
+        Validators.minLength(5),
+      ]),
+    });
   }
 }
