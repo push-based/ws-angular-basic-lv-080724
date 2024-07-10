@@ -43,7 +43,13 @@ import { FormsModule } from '@angular/forms';
           commentCtrl.invalid &&
           (commentCtrl.touched || commentCtrl.formDirective.submitted)
         ) {
-          <span class="error"> Please enter valid data </span>
+          <span class="error">
+            {{
+              commentCtrl.hasError('minlength')
+                ? 'Enter at least 5 characters'
+                : 'Please enter at least something'
+            }}
+          </span>
         }
       </div>
       <div class="button-group">
