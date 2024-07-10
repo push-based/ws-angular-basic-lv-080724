@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
@@ -22,10 +23,20 @@ import { SideDrawerComponent } from '../ui/component/side-drawer/side-drawer.com
     DarkModeToggleComponent,
     RouterLink,
     RouterLinkActive,
+    FormsModule,
   ],
 })
 export class AppShellComponent {
   sideDrawerOpen = false;
+
+  private _searchValue = '';
+  get searchValue() {
+    return this._searchValue;
+  }
+  set searchValue(term: string) {
+    this._searchValue = term;
+    this.search(term);
+  }
 
   private router = inject(Router);
   private movieService = inject(MovieService);
@@ -33,6 +44,11 @@ export class AppShellComponent {
   genres = signal<TMDBMovieGenreModel[]>([]);
 
   constructor() {
+    // super hacky, but works ;)
+    setTimeout(() => {
+      this._searchValue =
+        this.router.routerState.snapshot.root.children[0].params.term;
+    });
     this.movieService.getGenres().subscribe(result => {
       this.genres.set(result.genres);
     });

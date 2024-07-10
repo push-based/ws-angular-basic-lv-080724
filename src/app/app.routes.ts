@@ -23,6 +23,13 @@ export const routes: Routes = [
     component: MovieListPageComponent,
   },
   {
+    path: 'my-movies',
+    loadComponent: () =>
+      import('./movie/my-movie-list/my-movie-list.component').then(
+        m => m.MyMovieListComponent
+      ),
+  },
+  {
     path: '**',
     loadComponent: () =>
       import('./not-found-page/not-found-page.component').then(

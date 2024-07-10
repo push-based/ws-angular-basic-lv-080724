@@ -101,9 +101,9 @@
       (click)="sideDrawerOpen = !sideDrawerOpen">
     </ui-hamburger-button>
     <div class="ui-toolbar--widget-container">
-      <ui-search-bar (searchSubmit)="search($event)"></ui-search-bar>
+      <ui-search-bar [(ngModel)]="searchValue"></ui-search-bar>
       <ui-dark-mode-toggle></ui-dark-mode-toggle>
-      <fast-svg name="account" size="30"></fast-svg>
+      <fast-svg [routerLink]="['/my-movies']" name="account" size="30"></fast-svg>
     </div>
   </div>
   <div class="content">
