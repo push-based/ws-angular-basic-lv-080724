@@ -1,15 +1,34 @@
 import { Component, inject } from '@angular/core';
 import {
+  AbstractControl,
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { FavoriteMovie } from '../../shared/model/movie.model';
 import { MovieService } from '../movie.service';
+
+const uniqueValidator = (): ValidatorFn => {
+  // we are in injectionContext here <-
+  const movieService = inject(MovieService);
+
+  return (control: AbstractControl) => {
+    const title = control.value;
+    const favorites = movieService.getFavorites();
+    const isInValid = favorites.some(favorite => favorite.title === title);
+    if (!isInValid) {
+      return null;
+    }
+    return {
+      unique: 'this title already exists',
+    };
+  };
+};
 
 @Component({
   selector: 'my-movie-list',
@@ -29,7 +48,11 @@ import { MovieService } from '../movie.service';
           name="title"
           type="text" />
         @if (title.invalid && (title.touched || formEl.submitted)) {
-          <span class="error"> Please enter valid data </span>
+          @if (title.hasError('unique')) {
+            <span class="error"> {{ title.errors['unique'] }} </span>
+          } @else {
+            <span class="error"> This is required </span>
+          }
         }
       </div>
       <div class="input-group">
@@ -147,7 +170,7 @@ export class MyMovieListComponent {
   favorites: FavoriteMovie[] = this.movieService.getFavorites();
 
   title = new FormControl('', {
-    validators: Validators.required,
+    validators: [Validators.required, uniqueValidator()],
     nonNullable: true,
   });
   comment = new FormControl('', {
