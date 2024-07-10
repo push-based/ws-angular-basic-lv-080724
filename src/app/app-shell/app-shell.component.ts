@@ -46,8 +46,11 @@ export class AppShellComponent {
   constructor() {
     // super hacky, but works ;)
     setTimeout(() => {
-      this._searchValue =
-        this.router.routerState.snapshot.root.children[0].params.term;
+      const searchValue =
+        this.router.routerState.snapshot.root.children[0]?.params?.term;
+      if (searchValue) {
+        this._searchValue = searchValue;
+      }
     });
     this.movieService.getGenres().subscribe(result => {
       this.genres.set(result.genres);

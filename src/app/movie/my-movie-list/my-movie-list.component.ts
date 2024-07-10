@@ -6,18 +6,45 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [FormsModule],
   template: `
-    <form (submit)="save()">
+    <form
+      #formEl
+      (submit)="
+        formEl.checkValidity() && save();
+        formEl.checkValidity() && formEl.reset()
+      ">
       <div class="input-group">
         <label for="title">Title</label>
-        <input id="title" name="title" type="text" [(ngModel)]="title" />
+        <input
+          required
+          #titleCtrl="ngModel"
+          [class.error]="titleCtrl.invalid"
+          id="title"
+          name="title"
+          type="text"
+          [(ngModel)]="title" />
+        @if (
+          titleCtrl.invalid &&
+          (titleCtrl.touched || titleCtrl.formDirective.submitted)
+        ) {
+          <span class="error"> Please enter valid data </span>
+        }
       </div>
       <div class="input-group">
         <label for="comment">Comment</label>
         <textarea
+          #commentCtrl="ngModel"
+          required
+          minlength="5"
           rows="5"
           name="comment"
           id="comment"
           [(ngModel)]="comment"></textarea>
+        @if (
+          commentCtrl.invalid &&
+          (commentCtrl.touched || commentCtrl.formDirective.submitted)
+        ) {
+          <span class="error"> Please enter valid data </span>
+        }
       </div>
       <div class="button-group">
         <button class="btn" type="reset">Reset</button>
@@ -59,6 +86,13 @@ import { FormsModule } from '@angular/forms';
 
     textarea,
     input {
+      &.ng-invalid {
+        &.ng-touched,
+        .ng-submitted & {
+          border-color: darkred;
+          background-color: rgba(139, 0, 0, 0.33);
+        }
+      }
       border: 1px solid black;
       padding: 4px;
       border-radius: 6px;
