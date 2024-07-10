@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 
 import { isCategoryGuard } from './is-category.guard';
 import { MovieListPageComponent } from './movie/movie-list-page/movie-list-page.component';
-import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 
 export const routes: Routes = [
   {
@@ -20,7 +19,14 @@ export const routes: Routes = [
     component: MovieListPageComponent,
   },
   {
+    path: 'genre/:genreId',
+    component: MovieListPageComponent,
+  },
+  {
     path: '**',
-    component: NotFoundPageComponent,
+    loadComponent: () =>
+      import('./not-found-page/not-found-page.component').then(
+        m => m.NotFoundPageComponent
+      ),
   },
 ];

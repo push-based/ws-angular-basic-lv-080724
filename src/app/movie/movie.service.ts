@@ -14,12 +14,7 @@ export class MovieService {
 
   getMovies(category: string): Observable<{ results: TMDBMovieModel[] }> {
     return this.httpClient.get<{ results: TMDBMovieModel[] }>(
-      `${environment.tmdbBaseUrl}/3/movie/${category}`,
-      {
-        headers: {
-          Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
-        },
-      }
+      `${environment.tmdbBaseUrl}/3/movie/${category}`
     );
   }
 
@@ -27,9 +22,6 @@ export class MovieService {
     return this.httpClient.get<{ results: TMDBMovieModel[] }>(
       `${environment.tmdbBaseUrl}/3/search/movie`,
       {
-        headers: {
-          Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
-        },
         params: { query },
       }
     );
@@ -37,12 +29,7 @@ export class MovieService {
 
   getGenres(): Observable<{ genres: TMDBMovieGenreModel[] }> {
     return this.httpClient.get<{ genres: TMDBMovieGenreModel[] }>(
-      `${environment.tmdbBaseUrl}/3/genre/movie/list`,
-      {
-        headers: {
-          Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
-        },
-      }
+      `${environment.tmdbBaseUrl}/3/genre/movie/list`
     );
   }
 
@@ -50,9 +37,6 @@ export class MovieService {
     return this.httpClient.get<{ results: TMDBMovieModel[] }>(
       `${environment.tmdbBaseUrl}/3/discover/movie`,
       {
-        headers: {
-          Authorization: `Bearer ${environment.tmdbApiReadAccessKey}`,
-        },
         params: {
           with_genres: genreId,
         },

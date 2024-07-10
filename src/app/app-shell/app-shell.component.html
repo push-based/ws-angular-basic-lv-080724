@@ -63,6 +63,18 @@
 
     <!-- Insert Genre links here -->
 
+    @for (genre of genres(); track genre.id) {
+      <a
+        [routerLink]="['/genre', genre.id]"
+        [routerLinkActive]="'active'"
+        class="navigation--link">
+        <div class="navigation--menu-item">
+          <fast-svg class="navigation--menu-item-icon" name="genre" />
+          {{ genre.name }}
+        </div>
+      </a>
+    }
+
   </nav>
   <div class="menu-footer">
     <a

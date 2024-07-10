@@ -59,6 +59,12 @@ export class MovieListPageComponent {
             this.movies.set(response.results);
           }, 1500);
         });
+      } else if (params.genreId) {
+        this.movieService
+          .getMoviesByGenre(params.genreId)
+          .subscribe(response => {
+            this.movies.set(response.results);
+          });
       } else {
         this.movieService.getMovies(params.category).subscribe(response => {
           setTimeout(() => {
