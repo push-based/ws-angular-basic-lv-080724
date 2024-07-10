@@ -78,7 +78,7 @@ what we have stored in our persistence layer.
 For each of the `movies` in the store, create a `FormGroup` and add it to the `favorites: FormArray`. You can do that in
 onInit or at construct time by assigning it directly to the property itself.
 
-Create a helper function `createMovieGroup(movie: MovieWithComment): MovieForm`
+Create a helper function `createMovieGroup(movie: FavoriteMovieModel): MovieForm`
 
 <details>
     <summary>FormArray & Helper utility</summary>
@@ -95,7 +95,7 @@ favorites = new FormArray(
 );
 
 // convenience function for creating a formGroup for a movie
-private createMovieGroup(movie: MovieWithComment): MovieForm {
+private createMovieGroup(movie: FavoriteMovieModel): MovieForm {
   return new FormGroup({
     title: new FormControl(movie.title, {
       nonNullable: true,
@@ -129,8 +129,8 @@ template and apply some changes to display an actual form.
 
 * Bind the `favoritesForm: FormGroup` to the `div.favorites-list` which than serves as form container for us
 * Create an `ng-container formArrayName="favorites"` as a wrapper around the `div.favorite-item @for` construct
-* iterate over `let favorite of favorites.controls; let i = index`
-* apply the `[formGroupName]="i"` do each `.favorite-item`
+* iterate over `let favorite of favorites.controls; track favorite`
+* apply the `[formGroupName]="$index"` do each `.favorite-item`
 * instead of reading `movie.title`, change the value binding so that you read the value from `favorite.controls.title.value`
   * alternative: you can also create an `input readonly` and use the `formControlName="title"` directive
 * create a `div.input-group` for the `textarea` for the comments, apply the `formControlName="comment"` directive to it
@@ -147,7 +147,7 @@ template and apply some changes to display an actual form.
   <!-- FormArray binding -->
   <ng-container formArrayName="favorites">
     <!-- FormGroup binding -->
-    @for (favorite of favorites.controls; track favorite.id) {
+    @for (favorite of favorites.controls; track favorite) {
       <div class="favorite-item"
            [formGroupName]="$index">
         <span class="favorite-item__title">{{ favorite.controls.title.value }}</span>
@@ -157,7 +157,7 @@ template and apply some changes to display an actual form.
         </div>
         <button class="btn btn__icon"
                 (click)="removeFavorite({title: favorite.controls.title.value, comment: favorite.controls.comment.value})">
-          <svg-icon name="delete"></svg-icon>
+          <fast-svg name="delete" />
         </button>
       </div>
     }
@@ -229,15 +229,15 @@ You get the `$index` from the context of the `@for` control flow.
 
 ```html
 <!-- my-movie-list.component.html -->
-@for (favorite of favorites.controls; track favorite.id) {
+@for (favorite of favorites.controls; track favorite) {
   <div class="favorite-item"
-       [formGroupName]="i">
+       [formGroupName]="$index">
   
     <!-- controls -->
   
     <button class="btn btn__icon"
-            (click)="removeFavorite(i)">
-      <svg-icon name="delete"></svg-icon>
+            (click)="removeFavorite($index)">
+      <fast-svg name="delete" />
     </button>
   </div>
 }
